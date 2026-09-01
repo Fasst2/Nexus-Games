@@ -14,7 +14,7 @@
     <!-- Estilos CSS -->
     <link rel="stylesheet" href="css/styles.css">
     
-    <!-- Icono de la pestaña (Favicon con versión para forzar caché) -->
+    <!-- Icono de la pestaña -->
     <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
 </head>
 <body>
@@ -37,7 +37,6 @@
             </nav>
 
             <div class="nav-actions">
-                <!-- Botón de autenticación ocultado para simplificar la compra -->
                 <button class="cart-button" id="cart-btn" onclick="toggleCartModal()">
                     🛒 Carrito (<span id="cart-count">0</span>)
                 </button>
@@ -50,7 +49,7 @@
         <section class="hero">
             <div class="container">
                 <h1>Juegos Digitales al Mejor Precio</h1>
-                <p>Cuentas Primarias, Secundarias y Licencias PC. Entrega inmediata y pago por Transferencia Bancaria.</p>
+                <p>Cuentas Primarias, Secundarias y Licencias PC. Entrega inmediata y pago seguro por Transferencia Bancaria.</p>
             </div>
         </section>
 
@@ -62,6 +61,29 @@
             </div>
         </section>
     </main>
+
+    <!-- MODAL SELECCIÓN DE TIPO DE CUENTA -->
+    <div class="modal-overlay" id="account-type-modal">
+        <div class="modal-content account-selection-card">
+            <button class="close-btn" onclick="closeAccountModal()">&times;</button>
+            <h3 id="account-modal-title">Seleccionar Tipo de Cuenta</h3>
+            <p class="auth-subtitle">Elegí la modalidad en la que querés jugar:</p>
+            
+            <div class="account-options">
+                <button class="btn-account-option" onclick="confirmAddToCart('Primaria')">
+                    <div class="option-title">Cuenta Primaria</div>
+                    <div class="option-desc">Jugás desde tu usuario personal, acumulás trofeos y no requiere internet constante.</div>
+                    <div class="option-price" id="primary-price-tag">$0 ARS</div>
+                </button>
+
+                <button class="btn-account-option" onclick="confirmAddToCart('Secundaria')">
+                    <div class="option-title">Cuenta Secundaria</div>
+                    <div class="option-desc">Jugás únicamente desde el usuario provisto y requiere conexión a internet permanente.</div>
+                    <div class="option-price" id="secondary-price-tag">$0 ARS</div>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- MODAL DEL CARRITO DE COMPRAS Y PAGO -->
     <div class="modal-overlay" id="cart-modal">
@@ -117,79 +139,6 @@
                 <div class="payment-actions">
                     <button class="btn-secondary" onclick="backToCart()">Volver al Carrito</button>
                     <a id="ws-btn" href="#" target="_blank" class="btn-whatsapp">Enviar Comprobante 💬</a>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- MODAL DE AUTENTICACIÓN -->
-    <div class="modal-overlay" id="auth-modal">
-        <div class="modal-content auth-card">
-            <button class="close-btn" onclick="closeAuthModal()">&times;</button>
-
-            <!-- 1. Formulario Login -->
-            <div id="form-login" class="auth-form">
-                <h2>Iniciar Sesión</h2>
-                <p class="auth-subtitle">Accedé a tus juegos y licencias compradas.</p>
-                <form onsubmit="handleLogin(event)">
-                    <div class="form-group">
-                        <label for="login-email">Correo Electrónico</label>
-                        <input type="email" id="login-email" placeholder="tu@email.com" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="login-password">Contraseña</label>
-                        <input type="password" id="login-password" placeholder="••••••••" required>
-                    </div>
-                    <div class="auth-links">
-                        <a href="#" onclick="switchAuthTab('forgot')">¿Olvidaste tu contraseña?</a>
-                    </div>
-                    <button type="submit" class="btn-primary-full">Ingresar</button>
-                </form>
-                <div class="auth-footer">
-                    <span>¿No tenés cuenta?</span>
-                    <a href="#" onclick="switchAuthTab('register')">Registrate acá</a>
-                </div>
-            </div>
-
-            <!-- 2. Formulario Registro -->
-            <div id="form-register" class="auth-form hidden">
-                <h2>Crear Cuenta</h2>
-                <p class="auth-subtitle">Registrate para realizar tus compras más rápido.</p>
-                <form onsubmit="handleRegister(event)">
-                    <div class="form-group">
-                        <label for="reg-name">Nombre Completo</label>
-                        <input type="text" id="reg-name" placeholder="Ej: Juan Pérez" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="reg-email">Correo Electrónico</label>
-                        <input type="email" id="reg-email" placeholder="tu@email.com" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="reg-password">Contraseña</label>
-                        <input type="password" id="reg-password" placeholder="Mínimo 6 caracteres" minlength="6" required>
-                    </div>
-                    <button type="submit" class="btn-primary-full">Registrarme</button>
-                </form>
-                <div class="auth-footer">
-                    <span>¿Ya tenés cuenta?</span>
-                    <a href="#" onclick="switchAuthTab('login')">Iniciá sesión</a>
-                </div>
-            </div>
-
-            <!-- 3. Formulario Recuperar Contraseña -->
-            <div id="form-forgot" class="auth-form hidden">
-                <h2>Recuperar Contraseña</h2>
-                <p class="auth-subtitle">Te enviaremos las instrucciones a tu casilla de correo.</p>
-                <form onsubmit="handleForgot(event)">
-                    <div class="form-group">
-                        <label for="forgot-email">Correo Electrónico</label>
-                        <input type="email" id="forgot-email" placeholder="tu@email.com" required>
-                    </div>
-                    <button type="submit" class="btn-primary-full">Enviar Instrucciones</button>
-                </form>
-                <div class="auth-footer">
-                    <a href="#" onclick="switchAuthTab('login')">Volver al inicio de sesión</a>
                 </div>
             </div>
 
