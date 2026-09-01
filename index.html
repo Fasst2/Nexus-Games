@@ -3,23 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Tienda de juegos digitales para PS4, PS5 y PC al mejor precio. Entrega inmediata.">
-    <title>Nexus Games | Juegos Digitales PS4, PS5 & PC</title>
+    <meta name="description" content="Tienda de juegos digitales para PS4, PS5, PC y Membresías PS Plus. Entrega inmediata.">
+    <title>Nexus Games | Juegos Digitales & PS Plus</title>
 
-    <!-- Fuente Inter (Google Fonts) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
 
-    <!-- Estilos CSS -->
     <link rel="stylesheet" href="css/styles.css">
-    
-    <!-- Icono de la pestaña -->
     <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
 </head>
 <body>
 
-    <!-- Encabezado principal -->
     <header class="navbar">
         <div class="container navbar-content">
             <a href="#" class="logo">
@@ -29,10 +24,39 @@
 
             <nav class="nav-menu" aria-label="Navegación principal">
                 <ul>
-                    <li><a href="#" class="nav-link active" onclick="filterProducts('all', event)">TODOS</a></li>
-                    <li><a href="#" class="nav-link" onclick="filterProducts('PS5', event)">PS5</a></li>
-                    <li><a href="#" class="nav-link" onclick="filterProducts('PS4', event)">PS4</a></li>
-                    <li><a href="#" class="nav-link" onclick="filterProducts('PC', event)">PC</a></li>
+                    <li><a href="#" class="nav-link active" onclick="filterProducts('all', event)">INICIO</a></li>
+                    
+                    <li class="dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" onclick="event.preventDefault()">PROMOS <span class="arrow">▾</span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#" onclick="filterProducts('Combos', event)">🔥 Combos Especiales</a></li>
+                            <li><a href="#" onclick="filterProducts('Ofertas', event)">⚡ Ofertas de la Semana</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" onclick="event.preventDefault()">PS PLUS <span class="arrow">▾</span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#" onclick="filterProducts('PS Plus Essential', event)">PlayStation Essential</a></li>
+                            <li><a href="#" onclick="filterProducts('PS Plus Extra', event)">PlayStation Extra</a></li>
+                            <li><a href="#" onclick="filterProducts('PS Plus Deluxe', event)">PlayStation Deluxe</a></li>
+                        </ul>
+                    </li>
+
+                    <li><a href="#" class="nav-link" onclick="filterProducts('Pre-Venta', event)">PRE-VENTA</a></li>
+
+                    <li class="dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" onclick="event.preventDefault()">JUEGOS <span class="arrow">▾</span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#" onclick="filterProducts('PS4', event)">PS4</a></li>
+                            <li><a href="#" onclick="filterProducts('PS5', event)">PS5</a></li>
+                            <li><a href="#" onclick="filterProducts('PC', event)" class="disabled-link">PC (Próximamente)</a></li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <a href="https://wa.me/5493765036949?text=¡Hola%20Nexus%20Games!%20Tengo%20una%20consulta." target="_blank" class="nav-link">CONTACTO</a>
+                    </li>
                 </ul>
             </nav>
 
@@ -44,43 +68,74 @@
         </div>
     </header>
 
-    <!-- Banner Principal -->
     <main>
         <section class="hero">
             <div class="container">
-                <h1>Juegos Digitales al Mejor Precio</h1>
-                <p>Cuentas Primarias, Secundarias y Licencias PC. Entrega inmediata y pago seguro por Transferencia Bancaria.</p>
+                <h1>Juegos Digitales & Subscripciones</h1>
+                <p>Membresías PS Plus, Combos, Cuentas Primarias, Secundarias y Pre-Ventas. Entrega inmediata por WhatsApp.</p>
             </div>
         </section>
 
-        <!-- Catálogo de Productos -->
         <section class="products-section container">
-            <h2>Catálogo Destacado</h2>
-            <div class="product-grid" id="product-grid">
-                <!-- Productos dinámicos desde JS -->
+            <div class="catalog-header">
+                <h2 id="section-title">Catálogo Destacado</h2>
+                
+                <div class="search-box">
+                    <input type="text" id="search-input" placeholder="Buscar juego, combo u oferta..." onkeyup="filterProductsBySearch()">
+                    <span class="search-icon">🔍</span>
+                </div>
             </div>
+
+            <div class="product-grid" id="product-grid"></div>
         </section>
     </main>
 
-    <!-- MODAL SELECCIÓN DE TIPO DE CUENTA -->
-    <div class="modal-overlay" id="account-type-modal">
-        <div class="modal-content account-selection-card">
-            <button class="close-btn" onclick="closeAccountModal()">&times;</button>
-            <h3 id="account-modal-title">Seleccionar Tipo de Cuenta</h3>
-            <p class="auth-subtitle">Elegí la modalidad en la que querés jugar:</p>
+    <!-- MODAL DETALLE DE PRODUCTO -->
+    <div id="product-detail-modal" class="modal-overlay">
+        <div class="modal-content detail-modal-content">
+            <span class="close-modal" onclick="closeProductDetail()">&times;</span>
             
-            <div class="account-options">
-                <button class="btn-account-option" onclick="confirmAddToCart('Primaria')">
-                    <div class="option-title">Cuenta Primaria</div>
-                    <div class="option-desc">Jugás desde tu usuario personal, acumulás trofeos y no requiere internet constante.</div>
-                    <div class="option-price" id="primary-price-tag">$0 ARS</div>
-                </button>
+            <div class="product-detail-grid">
+                <div class="detail-media">
+                    <img id="detail-image" src="" alt="Juego">
+                    <span id="detail-badge" class="product-badge">PS4</span>
+                </div>
+                
+                <div class="detail-info">
+                    <h2 id="detail-title">Nombre del Juego</h2>
+                    <div id="detail-price" class="detail-price-tag">$0 ARS</div>
 
-                <button class="btn-account-option" onclick="confirmAddToCart('Secundaria')">
-                    <div class="option-title">Cuenta Secundaria</div>
-                    <div class="option-desc">Jugás únicamente desde el usuario provisto y requiere conexión a internet permanente.</div>
-                    <div class="option-price" id="secondary-price-tag">$0 ARS</div>
-                </button>
+                    <!-- Selector tipo de cuenta -->
+                    <div id="account-selector-container">
+                        <p style="margin-bottom: 8px; color: #8b949e;">Seleccionar Tipo de Cuenta:</p>
+                        <label class="account-option">
+                            <input type="radio" name="accountType" value="Primaria" checked onchange="updateDetailPrice('Primaria')">
+                            <div>
+                                <strong>Cuenta Primaria</strong>
+                                <span>Jugás con tu usuario personal + Trofeos</span>
+                            </div>
+                        </label>
+                        <label class="account-option">
+                            <input type="radio" name="accountType" value="Secundaria" onchange="updateDetailPrice('Secundaria')">
+                            <div>
+                                <strong>Cuenta Secundaria</strong>
+                                <span>Jugás desde el usuario entregado + Conexión a Internet</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <button class="btn-primary-action" onclick="addFromDetail()">Agregar al Carrito</button>
+
+                    <!-- Beneficios -->
+                    <div class="detail-benefits">
+                        <div>🎮 <strong>Modo de Juego:</strong> 100% Digital / Completo</div>
+                        <div>⚡ <strong>Entrega Inmediata:</strong> Envío de datos por WhatsApp / Email</div>
+                        <div>🛡️ <strong>Garantía:</strong> Garantía anti-candado y soporte vitalicio</div>
+                    </div>
+
+                    <!-- DESCRIPCIÓN COMPLETA DEL JUEGO -->
+                    <div id="detail-description-container"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -93,11 +148,8 @@
                 <button class="close-btn" onclick="toggleCartModal()">&times;</button>
             </div>
             
-            <!-- Vista 1: Items del carrito -->
             <div id="cart-view">
-                <div class="modal-body" id="cart-items">
-                    <!-- Contenido dinámico JS -->
-                </div>
+                <div class="modal-body" id="cart-items"></div>
                 <div class="modal-footer">
                     <div class="cart-total">
                         <span>Total:</span>
@@ -107,7 +159,6 @@
                 </div>
             </div>
 
-            <!-- Vista 2: Datos de Transferencia -->
             <div id="payment-view" class="hidden">
                 <p class="auth-subtitle">Realizá la transferencia por el total acumulado a la siguiente cuenta:</p>
                 
@@ -141,14 +192,11 @@
                     <a id="ws-btn" href="#" target="_blank" class="btn-whatsapp">Enviar Comprobante 💬</a>
                 </div>
             </div>
-
         </div>
     </div>
 
-    <!-- Contenedor para Notificaciones Toast -->
     <div id="toast-container" class="toast-container"></div>
 
-    <!-- Script principal JS -->
     <script src="js/main.js"></script>
 </body>
 </html>
