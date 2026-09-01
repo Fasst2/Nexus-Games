@@ -237,3 +237,57 @@ document.addEventListener('DOMContentLoaded', () => {
     renderProducts();
     updateCartUI();
 });
+
+// Variable global para seguir el filtro activo
+let currentFilter = 'all';
+
+// Reemplazá o actualizá tu función renderProducts por esta:
+function renderProducts(filter = 'all') {
+    const grid = document.getElementById('product-grid');
+    if (!grid) return;
+
+    grid.innerHTML = '';
+
+    // Filtrar los productos según la plataforma seleccionada
+    const filteredProducts = filter === 'all' 
+        ? products 
+        : products.filter(p => p.platform.toUpperCase() === filter.toUpperCase());
+
+    if (filteredProducts.length === 0) {
+        grid.innerHTML = `<p class="no-products">No hay juegos disponibles para esta plataforma actualmente.</p>`;
+        return;
+    }
+
+    filteredProducts.forEach(product => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+            <div class="product-badge">${product.platform}</div>
+            <img src="${product.image}" alt="${product.name}" class="product-image" loading="lazy">
+            <div class="product-info">
+                <h3 class="product-title">${product.name}</h3>
+                <div class="product-price">$${product.price.toLocaleString('es-AR')} ARS</div>
+                <button class="btn-add-cart" onclick="addToCart(${product.id})">Agregar al Carrito</button>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+// Función para filtrar al hacer clic en el menú superior
+function filterProducts(platform, event) {
+    if (event) event.preventDefault();
+    
+    currentFilter = platform;
+    
+    // Actualizar clase activa en los enlaces del menú
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+    });
+    if (event && event.target) {
+        event.target.classList.add('active');
+    }
+
+    // Volver a renderizar los productos filtrados
+    renderProducts(platform);
+}

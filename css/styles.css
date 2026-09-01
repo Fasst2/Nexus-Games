@@ -567,3 +567,38 @@ body {
 .btn-whatsapp:hover {
     background-color: #20ba5a;
 }
+
+/* Estado activo del menú de navegación */
+.nav-menu ul li a.nav-link.active {
+    color: var(--accent-color);
+    border-bottom: 2px solid var(--accent-color);
+}
+
+.no-products {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--text-secondary);
+    padding: 40px 0;
+    font-size: 1.1rem;
+}
+
+.product-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.product-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px; /* Alineado a la derecha */
+    z-index: 2;
+    background-color: #000000;
+    color: #00f0ff;
+    border: 1px solid #00f0ff;
+    padding: 4px 14px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    border-radius: 50px; /* Bordes en forma de píldora */
+    letter-spacing: 0.5px;
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+}
