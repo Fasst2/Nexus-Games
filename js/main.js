@@ -6582,7 +6582,7 @@ const products = [
 ];
 
 // ==========================================================================
-// ESTADOS GLOBALES DE NAVEGACIÓN Y CARRITO
+// ESTADOS GLOBALES DE NAVEGACIÓN Y PERSISTENCIA DE CARRITO
 // ==========================================================================
 let cart = JSON.parse(localStorage.getItem('nexus_cart')) || [];
 let currentFilter = 'all';
@@ -6592,7 +6592,7 @@ let selectedAccountType = 'Primaria';
 let currentPage = 1;
 const itemsPerPage = 12;
 
-// Guardar en la memoria del navegador
+// Guardar estado del carrito en memoria local del navegador
 function saveCartToLocalStorage() {
     localStorage.setItem('nexus_cart', JSON.stringify(cart));
 }
@@ -6618,14 +6618,6 @@ function clearCart() {
     updateCartUI();
 }
 
-// ==========================================================================
-// INICIALIZACIÓN AUTOMÁTICA AL CARGAR LA PÁGINA
-// ==========================================================================
-document.addEventListener('DOMContentLoaded', () => {
-    // Restaura los productos guardados en la pantalla apenas abre la web
-    updateCartUI(); 
-});
-
 // CALCULA PRECIOS SEGÚN REGLA GENERAL
 function getProductPrices(product) {
     if (product.platform === 'PC' || product.platform.includes('PS Plus') || product.platform === 'Pre-Venta' || product.platform === 'Combos' || product.platform === 'Ofertas') {
@@ -6636,9 +6628,21 @@ function getProductPrices(product) {
     return { primary: primaryPrice, secondary: secondaryPrice };
 }
 
-// INICIALIZACIÓN
+// INICIALIZACIÓN ÚNICA AL CARGAR EL DOM
 document.addEventListener('DOMContentLoaded', () => {
+    updateCartUI();
     renderProducts();
+
+    // Menú hamburguesa móvil
+    const toggleBtn = document.getElementById('mobile-toggle');
+    const navMenu = document.getElementById('nav-menu');
+
+    if (toggleBtn && navMenu) {
+        toggleBtn.addEventListener('click', () => {
+            toggleBtn.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+    }
 });
 
 // RENDERIZAR PRODUCTOS CON FILTRADO, ORDENAMIENTO Y PAGINACIÓN
@@ -6677,7 +6681,6 @@ function renderProducts(filter = currentFilter, searchTerm = '') {
             break;
         case 'default':
         default:
-            // Mantiene el orden original del arreglo 'products'
             break;
     }
 
@@ -6696,7 +6699,7 @@ function renderProducts(filter = currentFilter, searchTerm = '') {
         return;
     }
 
-    // 3. Paginación (12 juegos por página)
+    // 3. Paginación
     const totalPages = Math.ceil(filtered.length / itemsPerPage);
     if (currentPage > totalPages) currentPage = 1;
 
@@ -6749,7 +6752,6 @@ function renderPagination(totalPages) {
     };
     paginationContainer.appendChild(prevBtn);
 
-    // Algoritmo para mostrar rango de páginas en listas grandes (ej. 800 juegos)
     let startPage = Math.max(1, currentPage - 2);
     let endPage = Math.min(totalPages, startPage + 4);
 
@@ -6836,10 +6838,9 @@ function filterProducts(category, event) {
     renderProducts(category, '');
 }
 
-// FUNCIÓN DISPARADA DESDE EL SELECTOR DEL HTML
 function sortGames(criteria) {
     currentSort = criteria;
-    currentPage = 1; // Reinicia a la primera página al reordenar
+    currentPage = 1;
     
     const searchInput = document.getElementById('search-input');
     const searchTerm = searchInput ? searchInput.value : '';
@@ -6916,7 +6917,7 @@ function addFromDetail() {
     const finalType = isSinglePrice ? 'Única' : selectedAccountType;
     const finalPrice = isSinglePrice ? prices.primary : (selectedAccountType === 'Primaria' ? prices.primary : prices.secondary);
 
-    cart.push({
+    addToCart({
         id: currentDetailProduct.id,
         name: currentDetailProduct.name,
         platform: currentDetailProduct.platform,
@@ -6924,7 +6925,6 @@ function addFromDetail() {
         price: finalPrice
     });
 
-    updateCartUI();
     closeProductDetail();
     showToast(`"${currentDetailProduct.name}" agregado al carrito`);
 }
@@ -6966,7 +6966,7 @@ function updateCartUI() {
             itemDiv.innerHTML = `
                 <div>
                     <strong style="display:block; color:#f0f6fc;">${item.name}</strong>
-                    <span style="font-size:0.85rem; color:#8b949e;">${item.platform} ${item.accountType !== 'Única' ? `(${item.accountType})` : ''}</span>
+                    <span style="font-size:0.85rem; color:#8b949e;">${item.platform} ${item.accountType && item.accountType !== 'Única' ? `(${item.accountType})` : ''}</span>
                 </div>
                 <div style="display:flex; align-items:center; gap:10px;">
                     <span style="color:#2ea043; font-weight:bold;">$${item.price.toLocaleString('es-AR')}</span>
@@ -6978,11 +6978,6 @@ function updateCartUI() {
     }
 
     if (totalEl) totalEl.innerText = `$${total.toLocaleString('es-AR')} ARS`;
-}
-
-function removeFromCart(index) {
-    cart.splice(index, 1);
-    updateCartUI();
 }
 
 function goToPayment() {
@@ -6997,7 +6992,7 @@ function goToPayment() {
     const total = cart.reduce((acc, i) => acc + i.price, 0);
     let message = `¡Hola Nexus Games! Quisiera realizar la compra de:\n`;
     cart.forEach(item => {
-        message += `- ${item.name} [${item.platform}] (${item.accountType}): $${item.price.toLocaleString('es-AR')} ARS\n`;
+        message += `- ${item.name} [${item.platform}] (${item.accountType || 'Única'}): $${item.price.toLocaleString('es-AR')} ARS\n`;
     });
     message += `\nTotal: $${total.toLocaleString('es-AR')} ARS\nAdjunto comprobante de pago.`;
 
@@ -7028,13 +7023,13 @@ function showToast(msg) {
     container.appendChild(toast);
     setTimeout(() => toast.remove(), 3000);
 }
+
 // ABRIR Y CERRAR MODAL DE CONSULTAS
 function openHelpModal(event) {
     if (event) event.preventDefault();
     const modal = document.getElementById('help-modal');
     if (modal) modal.classList.add('active');
     
-    // Si el menú móvil está abierto, cerrarlo al tocar Consultas
     const toggleBtn = document.getElementById('mobile-toggle');
     const navMenu = document.getElementById('nav-menu');
     if (navMenu && navMenu.classList.contains('active')) {
@@ -7048,36 +7043,19 @@ function closeHelpModal() {
     if (modal) modal.classList.remove('active');
 }
 
-// CAMBIAR ENTRE PESTAÑAS (TABS)
 function switchTab(tabId, event) {
     if (event) event.preventDefault();
     
-    // Ocultar todos los contenidos
     const contents = document.querySelectorAll('.tab-content');
     contents.forEach(content => content.classList.remove('active'));
 
-    // Desactivar todos los botones
     const buttons = document.querySelectorAll('.tab-btn');
     buttons.forEach(btn => btn.classList.remove('active'));
 
-    // Activar pestaña seleccionada
     const activeContent = document.getElementById(tabId);
     if (activeContent) activeContent.classList.add('active');
     if (event && event.currentTarget) event.currentTarget.classList.add('active');
 }
-
-// MENÚ HAMBURGUESA Y DROPDOWNS EN MÓVILES
-document.addEventListener('DOMContentLoaded', () => {
-    const toggleBtn = document.getElementById('mobile-toggle');
-    const navMenu = document.getElementById('nav-menu');
-
-    if (toggleBtn && navMenu) {
-        toggleBtn.addEventListener('click', () => {
-            toggleBtn.classList.toggle('active');
-            navMenu.classList.toggle('active');
-        });
-    }
-});
 
 function toggleDropdown(event) {
     if (window.innerWidth <= 992) {
@@ -7088,11 +7066,11 @@ function toggleDropdown(event) {
         }
     }
 }
+
 // CONFIGURACIÓN Y ESTADO DE PS PLUS
 let currentPSTier = 'Essential';
 let currentPSConsole = 'PS4';
 
-// Precios de referencia (Ajustá según tus valores)
 const psPlusPrices = {
     Essential: {
         PS4: { 1: 11000, 3: 22000, 12: 49000 },
@@ -7146,7 +7124,6 @@ function setPSPlusConsole(consoleType) {
     document.getElementById('btn-ps5').classList.toggle('active', consoleType === 'PS5');
     document.getElementById('current-console-label').innerText = consoleType === 'PS4' ? 'PlayStation 4' : 'PlayStation 5';
     
-    // Actualizar badges
     document.querySelectorAll('.console-badge').forEach(b => b.innerText = consoleType);
     updatePSPlusPrices();
 }
@@ -7155,13 +7132,11 @@ function renderPSPlusModal() {
     document.getElementById('psplus-title').innerText = `PS Plus ${currentPSTier}`;
     document.getElementById('tier-highlight-name').innerText = currentPSTier.toUpperCase();
     
-    // Resaltar columna en la tabla comparativa
     ['essential', 'extra', 'deluxe'].forEach(col => {
         const el = document.getElementById(`th-${col}`);
         if(el) el.classList.toggle('active-col', col.toLowerCase() === currentPSTier.toLowerCase());
     });
 
-    // Cargar beneficios
     const container = document.getElementById('benefits-grid-container');
     container.innerHTML = psPlusBenefits[currentPSTier].map(b => `
         <div class="benefit-card">
@@ -7187,20 +7162,13 @@ function addPSPlusToCart(months) {
     const price = psPlusPrices[currentPSTier][currentPSConsole][months];
     const item = {
         id: `psplus-${currentPSTier.toLowerCase()}-${currentPSConsole.toLowerCase()}-${months}m`,
-        title: `PS Plus ${currentPSTier} (${months} ${months === 1 ? 'Mes' : 'Meses'}) - ${currentPSConsole}`,
-        price: price,
-        type: 'Membresía'
+        name: `PS Plus ${currentPSTier} (${months} ${months === 1 ? 'Mes' : 'Meses'})`,
+        platform: currentPSConsole,
+        accountType: 'Membresía',
+        price: price
     };
     
-    // Integración con tu función principal de carrito (Ajustar a tu función addCartItem existente)
-    if (typeof addToCart === 'function') {
-        addToCart(item);
-    } else {
-        alert(`Añadido al carrito: ${item.title} por $${price.toLocaleString('es-AR')} ARS`);
-    }
+    addToCart(item);
     closePSPlusModal();
+    showToast(`"PS Plus ${currentPSTier}" agregado al carrito`);
 }
-// Ejecutar cuando el DOM esté listo para restaurar el carrito guardado
-document.addEventListener('DOMContentLoaded', () => {
-    updateCartUI(); // Cambiá este nombre si tu función de actualizar interfaz tiene otro nombre
-});
