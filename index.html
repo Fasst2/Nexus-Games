@@ -393,25 +393,25 @@
                 <p class="auth-subtitle">Realizá la transferencia por el total acumulado a la siguiente cuenta:</p>
                 
                 <div class="transfer-card">
-                    <div class="transfer-row">
-                        <span>Titular:</span>
-                        <strong>Stuber Federico Agustin</strong>
-                    </div>
-                    <div class="transfer-row">
-                        <span>Alias:</span>
-                        <div class="copy-box">
-                            <strong id="alias-text">stuberr.fede</strong>
-                            <button class="btn-copy" onclick="copyToClipboard('stuberr.fede', 'Alias copiado')">Copiar</button>
-                        </div>
-                    </div>
-                    <div class="transfer-row">
-                        <span>CVU:</span>
-                        <div class="copy-box">
-                            <strong id="cvu-text">0000003100052674291619</strong>
-                            <button class="btn-copy" onclick="copyToClipboard('0000003100052674291619', 'CVU copiado')">Copiar</button>
-                        </div>
-                    </div>
-                </div>
+    <div class="transfer-row">
+        <span>Titular:</span>
+        <strong>Stuber Federico Agustin</strong>
+    </div>
+    <div class="transfer-row">
+        <span>Alias (<span id="payment-currency-label">ARS</span>):</span>
+        <div class="copy-box">
+            <strong id="alias-text">stuberr.fede</strong>
+            <button class="btn-copy" id="btn-copy-alias" onclick="copyToClipboard('stuberr.fede', 'Alias copiado')">Copiar</button>
+        </div>
+    </div>
+    <div class="transfer-row">
+        <span><span id="payment-cvu-label">CVU</span>:</span>
+        <div class="copy-box">
+            <strong id="cvu-text">0000003100052674291619</strong>
+            <button class="btn-copy" id="btn-copy-cvu" onclick="copyToClipboard('0000003100052674291619', 'CVU copiado')">Copiar</button>
+        </div>
+    </div>
+</div>
 
                 <div class="transfer-instructions">
                     <p>⚠️ <strong>Paso final:</strong> Enviá el comprobante por WhatsApp adjuntando tu <strong>Número de Pedido</strong> y tu correo de Gmail para enviarte los datos de acceso a tu juego.</p>
