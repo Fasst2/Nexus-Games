@@ -44,9 +44,9 @@
                     <li class="dropdown">
                         <a href="#" class="nav-link dropdown-toggle" onclick="toggleDropdown(event)">PS PLUS <span class="arrow">▾</span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="#" onclick="filterProducts('PS Plus Essential', event)">PlayStation Essential</a></li>
-                            <li><a href="#" onclick="filterProducts('PS Plus Extra', event)">PlayStation Extra</a></li>
-                            <li><a href="#" onclick="filterProducts('PS Plus Deluxe', event)">PlayStation Deluxe</a></li>
+                            <li><a href="#" onclick="openPSPlusLanding('Essential', event)">PlayStation Essential</a></li>
+                            <li><a href="#" onclick="openPSPlusLanding('Extra', event)">PlayStation Extra</a></li>
+                            <li><a href="#" onclick="openPSPlusLanding('Deluxe', event)">PlayStation Deluxe</a></li>
                         </ul>
                     </li>
 
@@ -76,7 +76,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="https://instagram.com/TU_USUARIO_INSTAGRAM" target="_blank">
+                                <a href="https://www.instagram.com/nexuu.games/" target="_blank">
                                     <div class="contact-item">
                                         <span>📸 Instagram</span>
                                         <small class="response-time">Responde en 5 a 15 min</small>
@@ -138,6 +138,109 @@
             <div class="product-grid" id="product-grid"></div>
         </section>
     </main>
+
+    <!-- MODAL LANDING PS PLUS (ESTILO COMPLETO DINÁMICO) -->
+    <div id="psplus-landing-modal" class="modal-overlay">
+        <div class="modal-content psplus-modal-content">
+            <span class="close-modal" onclick="closePSPlusModal()">&times;</span>
+            
+            <div class="psplus-container">
+                <!-- TITULO Y SELECTOR DE CONSOLA/MONEDA -->
+                <div class="psplus-header">
+                    <span class="psplus-subtitle" id="psplus-subtitle">PLAYSTATION PLUS · MEMBRESÍA BASE</span>
+                    <h2 id="psplus-title">PS Plus Essential</h2>
+                    <p class="psplus-intro" id="psplus-intro">Membresía ideal para disfrutar del multijugador online y jugar juegos gratis rotativos cada mes.</p>
+                    
+                    <div class="psplus-toggles">
+                        <div class="toggle-group">
+                            <button class="toggle-btn active" id="btn-ps4" onclick="setPSPlusConsole('PS4')">🎮 PS4</button>
+                            <button class="toggle-btn" id="btn-ps5" onclick="setPSPlusConsole('PS5')">🎮 PS5</button>
+                        </div>
+                        <div class="toggle-group">
+                            <button class="toggle-btn active">🇦🇷 ARS</button>
+                        </div>
+                    </div>
+                    <p class="platform-note">Mostrando precios para <strong id="current-console-label">PlayStation 4</strong></p>
+                </div>
+
+                <!-- TARJETAS DE PRECIOS DINÁMICAS -->
+                <div class="pricing-grid">
+                    <!-- 1 MES -->
+                    <div class="price-card">
+                        <span class="plan-duration">1 MES</span>
+                        <div class="plan-price" id="price-1m">$11.000</div>
+                        <span class="plan-currency">Pesos Argentinos</span>
+                        <span class="badge-tag console-badge">PS4</span>
+                        <button class="btn-plan-outline" onclick="addPSPlusToCart(1)">OBTENER AHORA</button>
+                    </div>
+
+                    <!-- 3 MESES (DESTACADO) -->
+                    <div class="price-card featured">
+                        <div class="featured-badge">⭐ MÁS POPULAR</div>
+                        <span class="plan-duration">3 MESES</span>
+                        <div class="plan-price" id="price-3m">$22.000</div>
+                        <span class="plan-currency">Pesos Argentinos</span>
+                        <span class="badge-tag console-badge">PS4</span>
+                        <button class="btn-plan-filled" onclick="addPSPlusToCart(3)">OBTENER AHORA</button>
+                    </div>
+
+                    <!-- 12 MESES -->
+                    <div class="price-card">
+                        <span class="plan-duration">12 MESES</span>
+                        <div class="plan-price" id="price-12m">$49.000</div>
+                        <span class="plan-currency">Pesos Argentinos</span>
+                        <span class="badge-tag console-badge">PS4</span>
+                        <button class="btn-plan-outline" onclick="addPSPlusToCart(12)">OBTENER AHORA</button>
+                    </div>
+                </div>
+
+                <!-- PARRILLA DE BENEFICIOS DE 2 COLUMNAS -->
+                <div class="benefits-section">
+                    <span class="section-label">¿QUÉ INCLUYE?</span>
+                    <h3>BENEFICIOS <span class="highlight" id="tier-highlight-name">ESSENTIAL</span></h3>
+
+                    <div class="benefits-grid" id="benefits-grid-container">
+                        <!-- Rellenado dinámicamente vía JS -->
+                    </div>
+                </div>
+
+                <!-- TABLA COMPARATIVA -->
+                <div class="comparison-container">
+                    <h3>¿QUÉ INCLUYE CADA PLAN DE PS PLUS?</h3>
+                    <div class="table-responsive">
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: left;">CARACTERÍSTICA</th>
+                                    <th id="th-essential">ESSENTIAL</th>
+                                    <th id="th-extra">EXTRA</th>
+                                    <th id="th-deluxe">DELUXE</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Multijugador Online</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+                                <tr><td>Juegos Mensuales Gratis</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+                                <tr><td>Descuentos Exclusivos Store</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+                                <tr><td>Catálogo 400+ Juegos (PS4/PS5)</td><td class="cross">✕</td><td class="check">✓</td><td class="check">✓</td></tr>
+                                <tr><td>Catálogo de Clásicos (PS1, PS2, PSP)</td><td class="cross">✕</td><td class="cross">✕</td><td class="check">✓</td></tr>
+                                <tr><td>Pruebas de Juegos Exclusivas</td><td class="cross">✕</td><td class="cross">✕</td><td class="check">✓</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- BANNER DE LLAMADO A LA ACCIÓN -->
+                <div class="cta-banner">
+                    <h2>¿LISTO PARA <span class="highlight">JUGAR ONLINE?</span></h2>
+                    <p>Activá tu membresía hoy. <strong>Entrega inmediata a tu Gmail, en pesos y sin impuestos.</strong></p>
+                    <div class="cta-buttons">
+                        <button class="btn-plan-filled" onclick="addPSPlusToCart(12)">🎮 OBTENER 12 MESES AHORA</button>
+                        <a href="https://wa.me/5493765036949?text=¡Hola!%20Quiero%20consultar%20por%20PS%20Plus" target="_blank" class="btn-whatsapp-outline">💬 CONSULTAR POR WHATSAPP</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- MODAL DETALLE DE PRODUCTO -->
     <div id="product-detail-modal" class="modal-overlay">
