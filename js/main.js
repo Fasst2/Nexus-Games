@@ -60,6 +60,27 @@ function changeCurrency(newCurrency) {
     if (psPlusArs) psPlusArs.classList.toggle('active', newCurrency === 'ARS');
     if (psPlusUsd) psPlusUsd.classList.toggle('active', newCurrency === 'USD');
 
+    // Datos de cuentas bancarias según la moneda
+    const isUsd = newCurrency === 'USD';
+    const aliasText = isUsd ? 'stuberr.fede.usd' : 'stuberr.fede';
+    const cbuText = isUsd ? '1430001713004498490015' : '0000003100052674291619';
+    const cbuLabel = isUsd ? 'CBU' : 'CVU';
+
+    // Actualizar elementos visuales del pago en el DOM (si el modal del carrito está abierto)
+    const currencyLabelEl = document.getElementById('payment-currency-label');
+    const cvuLabelEl = document.getElementById('payment-cvu-label');
+    const aliasTextEl = document.getElementById('alias-text');
+    const btnCopyAlias = document.getElementById('btn-copy-alias');
+    const cvuTextEl = document.getElementById('cvu-text');
+    const btnCopyCvu = document.getElementById('btn-copy-cvu');
+
+    if (currencyLabelEl) currencyLabelEl.innerText = newCurrency;
+    if (cvuLabelEl) cvuLabelEl.innerText = cbuLabel;
+    if (aliasTextEl) aliasTextEl.innerText = aliasText;
+    if (btnCopyAlias) btnCopyAlias.setAttribute('onclick', `copyToClipboard('${aliasText}', 'Alias copiado')`);
+    if (cvuTextEl) cvuTextEl.innerText = cbuText;
+    if (btnCopyCvu) btnCopyCvu.setAttribute('onclick', `copyToClipboard('${cbuText}', '${cbuLabel} copiado')`);
+
     // Refrescar todas las vistas de la tienda
     if (typeof renderProducts === 'function') renderProducts();
     if (typeof updateCartUI === 'function') updateCartUI();
