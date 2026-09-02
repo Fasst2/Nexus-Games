@@ -2,8 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Tienda de juegos digitales para PS4, PS5, PC y Membresías PS Plus. Entrega inmediata.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Tienda de juegos digitales para PS4, PS5, PC y Membresías PS Plus. Entrega inmediata por Gmail.">
     <title>Nexus Games | Juegos Digitales & PS Plus</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,12 +22,19 @@
                 NEXUS<span>GAMES</span>
             </a>
 
-            <nav class="nav-menu" aria-label="Navegación principal">
+            <!-- Botón Hamburguesa para Móviles -->
+            <button class="mobile-toggle" id="mobile-toggle" aria-label="Abrir menú">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <nav class="nav-menu" id="nav-menu" aria-label="Navegación principal">
                 <ul>
                     <li><a href="#" class="nav-link active" onclick="filterProducts('all', event)">INICIO</a></li>
                     
                     <li class="dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" onclick="event.preventDefault()">PROMOS <span class="arrow">▾</span></a>
+                        <a href="#" class="nav-link dropdown-toggle" onclick="toggleDropdown(event)">PROMOS <span class="arrow">▾</span></a>
                         <ul class="dropdown-menu">
                             <li><a href="#" onclick="filterProducts('Combos', event)">🔥 Combos Especiales</a></li>
                             <li><a href="#" onclick="filterProducts('Ofertas', event)">⚡ Ofertas de la Semana</a></li>
@@ -35,7 +42,7 @@
                     </li>
 
                     <li class="dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" onclick="event.preventDefault()">PS PLUS <span class="arrow">▾</span></a>
+                        <a href="#" class="nav-link dropdown-toggle" onclick="toggleDropdown(event)">PS PLUS <span class="arrow">▾</span></a>
                         <ul class="dropdown-menu">
                             <li><a href="#" onclick="filterProducts('PS Plus Essential', event)">PlayStation Essential</a></li>
                             <li><a href="#" onclick="filterProducts('PS Plus Extra', event)">PlayStation Extra</a></li>
@@ -46,7 +53,7 @@
                     <li><a href="#" class="nav-link" onclick="filterProducts('Pre-Venta', event)">PRE-VENTA</a></li>
 
                     <li class="dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" onclick="event.preventDefault()">JUEGOS <span class="arrow">▾</span></a>
+                        <a href="#" class="nav-link dropdown-toggle" onclick="toggleDropdown(event)">JUEGOS <span class="arrow">▾</span></a>
                         <ul class="dropdown-menu">
                             <li><a href="#" onclick="filterProducts('PS4', event)">PS4</a></li>
                             <li><a href="#" onclick="filterProducts('PS5', event)">PS5</a></li>
@@ -54,8 +61,37 @@
                         </ul>
                     </li>
 
-                    <li>
-                        <a href="https://wa.me/5493765036949?text=¡Hola%20Nexus%20Games!%20Tengo%20una%20consulta." target="_blank" class="nav-link">CONTACTO</a>
+                    <li><a href="#" class="nav-link" onclick="openHelpModal(event)">CONSULTAS</a></li>
+
+                    <!-- MENÚ DESPLEGABLE DE CONTACTO CON TIEMPOS DE RESPUESTA -->
+                    <li class="dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" onclick="toggleDropdown(event)">CONTACTO <span class="arrow">▾</span></a>
+                        <ul class="dropdown-menu contact-dropdown">
+                            <li>
+                                <a href="https://wa.me/5493765036949?text=¡Hola%20Nexus%20Games!%20Tengo%20una%20consulta." target="_blank">
+                                    <div class="contact-item">
+                                        <span>💬 WhatsApp</span>
+                                        <small class="response-time">Responde en 5 a 15 min</small>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://instagram.com/TU_USUARIO_INSTAGRAM" target="_blank">
+                                    <div class="contact-item">
+                                        <span>📸 Instagram</span>
+                                        <small class="response-time">Responde en 5 a 15 min</small>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="mailto:nexusgames.contacto@gmail.com?subject=Consulta%20Nexus%20Games">
+                                    <div class="contact-item">
+                                        <span>✉️ Gmail</span>
+                                        <small class="response-time">Responde aprox. en 1 hora</small>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
             </nav>
@@ -72,7 +108,7 @@
         <section class="hero">
             <div class="container">
                 <h1>Juegos Digitales & Subscripciones</h1>
-                <p>Membresías PS Plus, Combos, Cuentas Primarias, Secundarias y Pre-Ventas. Entrega inmediata por WhatsApp.</p>
+                <p>Membresías PS Plus, Combos, Cuentas Primarias, Secundarias y Pre-Ventas. Entrega garantizada a tu Gmail.</p>
             </div>
         </section>
 
@@ -85,7 +121,6 @@
                     <span class="search-icon">🔍</span>
                 </div>
 
-                <!-- BOTÓN DE ORDENAMIENTO -->
                 <div class="sort-container">
                     <label for="sortSelect">Ordenar por:</label>
                     <select id="sortSelect" onchange="sortGames(this.value)">
@@ -119,7 +154,6 @@
                     <h2 id="detail-title">Nombre del Juego</h2>
                     <div id="detail-price" class="detail-price-tag">$0 ARS</div>
 
-                    <!-- Selector tipo de cuenta -->
                     <div id="account-selector-container">
                         <p style="margin-bottom: 8px; color: #8b949e;">Seleccionar Tipo de Cuenta:</p>
                         <label class="account-option">
@@ -140,21 +174,92 @@
 
                     <button class="btn-primary-action" onclick="addFromDetail()">Agregar al Carrito</button>
 
-                    <!-- Beneficios -->
                     <div class="detail-benefits">
                         <div>🎮 <strong>Modo de Juego:</strong> 100% Digital / Completo</div>
-                        <div>⚡ <strong>Entrega Inmediata:</strong> Envío de datos por WhatsApp / Email</div>
+                        <div>✉️ <strong>Entrega Directa:</strong> Envío de datos a tu correo Gmail</div>
                         <div>🛡️ <strong>Garantía:</strong> Garantía anti-candado y soporte vitalicio</div>
                     </div>
 
-                    <!-- DESCRIPCIÓN COMPLETA DEL JUEGO -->
                     <div id="detail-description-container"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL DEL CARRITO DE COMPRAS Y PAGO -->
+    <!-- MODAL DE CONSULTAS -->
+    <div id="help-modal" class="modal-overlay">
+        <div class="modal-content help-modal-content">
+            <div class="modal-header">
+                <h2>Guía de Compra & Preguntas Frecuentes</h2>
+                <button class="close-btn" onclick="closeHelpModal()">&times;</button>
+            </div>
+
+            <div class="help-tabs">
+                <button class="tab-btn active" onclick="switchTab('tab-cuentas', event)">🎮 Cuentas</button>
+                <button class="tab-btn" onclick="switchTab('tab-pagos', event)">💳 Pagos</button>
+                <button class="tab-btn" onclick="switchTab('tab-entrega', event)">✉️ Entrega</button>
+                <button class="tab-btn" onclick="switchTab('tab-garantia', event)">🛡️ Garantía</button>
+            </div>
+
+            <div class="help-body">
+                <!-- TAB 1: CUENTAS -->
+                <div id="tab-cuentas" class="tab-content active">
+                    <h3>¿Cómo funcionan los juegos digitales?</h3>
+                    <div class="help-card">
+                        <h4>⭐ Cuenta Primaria</h4>
+                        <ul>
+                            <li>Jugás directamente desde tu <strong>usuario personal</strong>.</li>
+                            <li>Ganás trofeos y avances en tu perfil de PlayStation.</li>
+                            <li><strong>Sin internet:</strong> Podés jugar sin estar conectado a la red.</li>
+                        </ul>
+                    </div>
+                    <div class="help-card">
+                        <h4>🔹 Cuenta Secundaria</h4>
+                        <ul>
+                            <li>Jugás ingresando desde el <strong>usuario brindado por la tienda</strong>.</li>
+                            <li>Requiere tener la consola <strong>conectada a internet</strong> para jugar.</li>
+                            <li>Es una alternativa más económica con el mismo contenido completo del juego.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- TAB 2: PAGOS -->
+                <div id="tab-pagos" class="tab-content">
+                    <h3>Medios de Pago Aceptados</h3>
+                    <p>Aceptamos transferencias inmediatas desde cualquier banco o billetera virtual:</p>
+                    <ul class="help-list">
+                        <li><strong>Mercado Pago:</strong> Vía Alias / CVU.</li>
+                        <li><strong>Bancos Tradicionales & Billeteras:</strong> Ualá, Naranja X, Personal Pay, Brubank, etc.</li>
+                    </ul>
+                    <div class="help-alert">
+                        📌 <em>Recordá enviar el comprobante de pago por WhatsApp para validar tu compra e indicarnos tu Gmail de entrega.</em>
+                    </div>
+                </div>
+
+                <!-- TAB 3: ENTREGA -->
+                <div id="tab-entrega" class="tab-content">
+                    <h3>¿Cómo y cuándo recibo mi juego?</h3>
+                    <ul class="help-list">
+                        <li><strong>Medio de Envío:</strong> Correo Electrónico (<strong>Gmail</strong>).</li>
+                        <li><strong>Tiempo de Envío:</strong> Entre 5 a 30 minutos una vez verificado el pago.</li>
+                        <li><strong>¿Qué recibís en tu casilla?:</strong> Los datos de acceso (Mail y Contraseña de la cuenta) junto con un instructivo paso a paso detallado para instalar el juego en tu consola.</li>
+                    </ul>
+                </div>
+
+                <!-- TAB 4: GARANTÍA -->
+                <div id="tab-garantia" class="tab-content">
+                    <h3>Garantía y Soporte</h3>
+                    <ul class="help-list">
+                        <li>🔒 Todos nuestros juegos son <strong>originales y definitivos</strong>.</li>
+                        <li>🛡️ Garantía <strong>Anti-candado</strong> permanente.</li>
+                        <li>💬 Soporte técnico por WhatsApp, Instagram o Gmail ante cualquier duda.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CARRITO -->
     <div class="modal-overlay" id="cart-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -198,12 +303,12 @@
                 </div>
 
                 <div class="transfer-instructions">
-                    <p>⚠️ <strong>Paso final:</strong> Una vez hecha la transferencia, enviá el comprobante junto con tu correo a nuestro WhatsApp para recibir tu juego de inmediato.</p>
+                    <p>⚠️ <strong>Paso final:</strong> Enviá el comprobante por WhatsApp indicándonos tu correo de Gmail para enviarte los datos de acceso a tu juego.</p>
                 </div>
 
                 <div class="payment-actions">
                     <button class="btn-secondary" onclick="backToCart()">Volver al Carrito</button>
-                    <a id="ws-btn" href="#" target="_blank" class="btn-whatsapp">Enviar Comprobante 💬</a>
+                    <a id="ws-btn" href="#" target="_blank" class="btn-whatsapp">Enviar Comprobante & Gmail 💬</a>
                 </div>
             </div>
         </div>
