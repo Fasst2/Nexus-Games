@@ -782,3 +782,400 @@ body {
         flex: 1;
     }
 }
+/* ============================================================
+   ADAPTACIÓN RESPONSIVA COMPLETA PARA MÓVILES (IPHONE / SMARTPHONES)
+   ============================================================ */
+
+/* 1. Ajuste Global de Contenedores y Reset */
+html, body {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden; /* Evita que la página se mueva horizontalmente */
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    box-sizing: border-box !important;
+}
+
+/* 2. Barra de Navegación Móvil */
+@media (max-width: 850px) {
+    .navbar-content {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 12px !important;
+        padding: 12px 0 !important;
+    }
+
+    .logo {
+        font-size: 1.4rem !important;
+    }
+
+    .nav-menu {
+        width: 100% !important;
+        overflow-x: auto; /* Permite deslizar horizontalmente si los botones no entran */
+        white-space: nowrap;
+        padding-bottom: 5px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .nav-menu ul {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: flex-start !important;
+        gap: 12px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        list-style: none !important;
+    }
+
+    .nav-link {
+        font-size: 0.85rem !important;
+        padding: 6px 10px !important;
+    }
+
+    /* Submenús en Móvil (desplegables) */
+    .dropdown-menu {
+        position: absolute !important;
+        top: 100% !important;
+        left: 0 !important;
+        min-width: 180px !important;
+        z-index: 1000 !important;
+    }
+
+    .nav-actions {
+        width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+    }
+
+    .cart-button {
+        width: 100% !important;
+        max-width: 300px !important;
+        text-align: center !important;
+        padding: 10px !important;
+    }
+}
+
+/* 3. Banner Hero Adaptado */
+@media (max-width: 768px) {
+    .hero {
+        padding: 30px 15px !important;
+        text-align: center !important;
+    }
+
+    .hero h1 {
+        font-size: 1.6rem !important;
+        line-height: 1.3 !important;
+    }
+
+    .hero p {
+        font-size: 0.9rem !important;
+        margin-top: 8px !important;
+    }
+}
+
+/* 4. Cabecera del Catálogo (Título, Buscador y Filtro) */
+@media (max-width: 768px) {
+    .catalog-header {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px !important;
+        margin-bottom: 20px !important;
+    }
+
+    .catalog-header h2 {
+        font-size: 1.3rem !important;
+        text-align: center !important;
+    }
+
+    .search-box {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .sort-container {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 6px !important;
+        width: 100% !important;
+    }
+
+    .sort-container select {
+        width: 100% !important;
+        padding: 10px !important;
+    }
+}
+
+/* 5. Modales (Detalle del Juego y Carrito) */
+@media (max-width: 768px) {
+    .modal-overlay {
+        padding: 10px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .modal-content {
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: 90vh !important;
+        overflow-y: auto !important;
+        padding: 16px !important;
+        border-radius: 12px !important;
+        box-sizing: border-box !important;
+    }
+
+    .product-detail-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 15px !important;
+    }
+
+    .detail-media img {
+        width: 100% !important;
+        max-height: 220px !important;
+        object-fit: contain !important;
+    }
+
+    .account-option {
+        padding: 10px !important;
+    }
+
+    /* Caja de Transferencia */
+    .transfer-card {
+        padding: 12px !important;
+    }
+
+    .transfer-row {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 4px !important;
+    }
+
+    .copy-box {
+        width: 100% !important;
+        justify-content: space-between !important;
+    }
+
+    .payment-actions {
+        flex-direction: column !important;
+        gap: 10px !important;
+    }
+
+    .payment-actions button, 
+    .payment-actions a {
+        width: 100% !important;
+        text-align: center !important;
+        box-sizing: border-box !important;
+    }
+}
+
+/* 6. Footer */
+.footer {
+    padding: 20px 15px !important;
+    text-align: center !important;
+    font-size: 0.85rem !important;
+}
+/* ==========================================
+   ESTILOS PARA EL MODAL DE CONSULTAS / HELP
+   ========================================== */
+
+.help-modal-content {
+    max-width: 650px !important;
+    width: 92% !important;
+}
+
+.help-tabs {
+    display: flex;
+    gap: 8px;
+    border-bottom: 1px solid #30363d;
+    margin-bottom: 20px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+    -webkit-overflow-scrolling: touch;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    color: #8b949e;
+    padding: 10px 16px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.tab-btn.active {
+    color: #58a6ff;
+    border-bottom-color: #58a6ff;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.help-body h3 {
+    margin-top: 0;
+    color: #f0f6fc;
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+}
+
+.help-card {
+    background-color: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+}
+
+.help-card h4 {
+    margin: 0 0 8px 0;
+    color: #58a6ff;
+    font-size: 1rem;
+}
+
+.help-card ul, .help-list {
+    margin: 0;
+    padding-left: 20px;
+    color: #c9d1d9;
+    font-size: 0.92rem;
+    line-height: 1.6;
+}
+
+.help-alert {
+    background-color: rgba(210, 153, 34, 0.15);
+    border-left: 4px solid #d29922;
+    padding: 12px;
+    border-radius: 4px;
+    color: #e3b341;
+    font-size: 0.9rem;
+    margin-top: 15px;
+}
+
+/* ==========================================
+   ADAPTACIÓN RESPONSIVA MÓVIL (IPHONE)
+   ========================================== */
+
+.mobile-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 26px;
+    height: 20px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1001;
+}
+
+.mobile-toggle span {
+    width: 100%;
+    height: 3px;
+    background-color: #f0f6fc;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.mobile-toggle.active span:nth-child(1) { transform: translateY(8.5px) rotate(45deg); }
+.mobile-toggle.active span:nth-child(2) { opacity: 0; }
+.mobile-toggle.active span:nth-child(3) { transform: translateY(-8.5px) rotate(-45deg); }
+
+@media (max-width: 992px) {
+    .mobile-toggle { display: flex; }
+
+    .nav-menu {
+        position: fixed;
+        top: 60px;
+        left: -100%;
+        width: 100%;
+        height: calc(100vh - 60px);
+        background-color: #0d1117;
+        flex-direction: column;
+        padding: 20px 30px;
+        overflow-y: auto;
+        transition: left 0.3s ease;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    .nav-menu.active { left: 0; }
+
+    .nav-menu ul {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+        gap: 15px;
+    }
+
+    .nav-menu li { width: 100%; }
+
+    .nav-link {
+        display: block;
+        padding: 10px 0;
+        font-size: 1.1rem;
+        border-bottom: 1px solid #21262d;
+    }
+
+    .dropdown-menu {
+        position: static;
+        display: none;
+        background-color: #161b22;
+        padding: 8px 15px;
+        margin-top: 5px;
+        border-radius: 6px;
+    }
+
+    .dropdown.open .dropdown-menu { display: block; }
+}
+/* ==========================================
+   ESTILOS PARA EL DESPLEGABLE DE CONTACTO
+   ========================================== */
+
+.contact-dropdown {
+    min-width: 240px !important;
+}
+
+.contact-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 4px 0;
+}
+
+.contact-item span {
+    color: #f0f6fc;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.response-time {
+    color: #8b949e;
+    font-size: 0.78rem;
+    font-weight: normal;
+}
+
+.contact-dropdown a:hover .response-time {
+    color: #c9d1d9;
+}
