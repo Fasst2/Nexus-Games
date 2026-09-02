@@ -631,3 +631,154 @@ body {
     margin-top: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
+
+/* ESTILOS DE PAGINACIÓN MODERNOS */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin: 40px 0 20px 0;
+    width: 100%;
+}
+
+.page-btn {
+    background-color: #161b22;
+    color: #c9d1d9;
+    border: 1px solid #30363d;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.page-btn:hover:not(.disabled) {
+    background-color: #00d2ff;
+    color: #0d1117;
+    border-color: #00d2ff;
+    box-shadow: 0 0 12px rgba(0, 210, 255, 0.4);
+    transform: translateY(-2px);
+}
+
+.page-btn.active {
+    background-color: #00d2ff;
+    color: #0d1117;
+    border-color: #00d2ff;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(0, 210, 255, 0.3);
+}
+
+.page-btn.disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    border-color: #21262d;
+}
+
+/* ==========================================
+   CABECERA DEL CATÁLOGO & BOTÓN DE ORDENAR
+   ========================================== */
+
+.catalog-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.catalog-header h2 {
+    margin: 0;
+    font-size: 1.6rem;
+    color: #f0f6fc;
+}
+
+/* Buscador */
+.search-box {
+    position: relative;
+    flex: 1;
+    min-width: 240px;
+    max-width: 380px;
+}
+
+.search-box input {
+    width: 100%;
+    background-color: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 10px 38px 10px 14px;
+    color: #f0f6fc;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-box input:focus {
+    border-color: #58a6ff;
+    box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
+}
+
+.search-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    font-size: 0.9rem;
+    opacity: 0.6;
+}
+
+/* Selector de Ordenamiento */
+.sort-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sort-container label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #8b949e;
+    white-space: nowrap;
+}
+
+.sort-container select {
+    background-color: #161b22;
+    color: #f0f6fc;
+    border: 1px solid #30363d;
+    padding: 9px 12px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.sort-container select:hover, 
+.sort-container select:focus {
+    border-color: #58a6ff;
+    background-color: #1c2128;
+}
+
+/* Adaptación para Pantallas Celulares / Móviles */
+@media (max-width: 768px) {
+    .catalog-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-box {
+        max-width: 100%;
+    }
+
+    .sort-container {
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .sort-container select {
+        flex: 1;
+    }
+}

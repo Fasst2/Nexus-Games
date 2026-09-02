@@ -84,6 +84,20 @@
                     <input type="text" id="search-input" placeholder="Buscar juego, combo u oferta..." onkeyup="filterProductsBySearch()">
                     <span class="search-icon">🔍</span>
                 </div>
+
+                <!-- BOTÓN DE ORDENAMIENTO -->
+                <div class="sort-container">
+                    <label for="sortSelect">Ordenar por:</label>
+                    <select id="sortSelect" onchange="sortGames(this.value)">
+                        <option value="default">Predeterminado / Relevancia</option>
+                        <option value="price-asc">Precio: Menor a Mayor</option>
+                        <option value="price-desc">Precio: Mayor a Menor</option>
+                        <option value="name-asc">Nombre: A - Z</option>
+                        <option value="name-desc">Nombre: Z - A</option>
+                        <option value="offers">Solo Ofertas</option>
+                        <option value="combos">Solo Combos / Packs</option>
+                    </select>
+                </div>
             </div>
 
             <div class="product-grid" id="product-grid"></div>
@@ -194,6 +208,12 @@
             </div>
         </div>
     </div>
+
+    <footer class="footer">
+        <div class="container footer-content">
+            <p>&copy; 2026 Nexus Games. Todos los derechos reservados.</p>
+        </div>
+    </footer>
 
     <div id="toast-container" class="toast-container"></div>
 
