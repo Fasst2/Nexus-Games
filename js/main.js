@@ -6992,3 +6992,63 @@ function showToast(msg) {
     container.appendChild(toast);
     setTimeout(() => toast.remove(), 3000);
 }
+// ABRIR Y CERRAR MODAL DE CONSULTAS
+function openHelpModal(event) {
+    if (event) event.preventDefault();
+    const modal = document.getElementById('help-modal');
+    if (modal) modal.classList.add('active');
+    
+    // Si el menú móvil está abierto, cerrarlo al tocar Consultas
+    const toggleBtn = document.getElementById('mobile-toggle');
+    const navMenu = document.getElementById('nav-menu');
+    if (navMenu && navMenu.classList.contains('active')) {
+        toggleBtn.classList.remove('active');
+        navMenu.classList.remove('active');
+    }
+}
+
+function closeHelpModal() {
+    const modal = document.getElementById('help-modal');
+    if (modal) modal.classList.remove('active');
+}
+
+// CAMBIAR ENTRE PESTAÑAS (TABS)
+function switchTab(tabId, event) {
+    if (event) event.preventDefault();
+    
+    // Ocultar todos los contenidos
+    const contents = document.querySelectorAll('.tab-content');
+    contents.forEach(content => content.classList.remove('active'));
+
+    // Desactivar todos los botones
+    const buttons = document.querySelectorAll('.tab-btn');
+    buttons.forEach(btn => btn.classList.remove('active'));
+
+    // Activar pestaña seleccionada
+    const activeContent = document.getElementById(tabId);
+    if (activeContent) activeContent.classList.add('active');
+    if (event && event.currentTarget) event.currentTarget.classList.add('active');
+}
+
+// MENÚ HAMBURGUESA Y DROPDOWNS EN MÓVILES
+document.addEventListener('DOMContentLoaded', () => {
+    const toggleBtn = document.getElementById('mobile-toggle');
+    const navMenu = document.getElementById('nav-menu');
+
+    if (toggleBtn && navMenu) {
+        toggleBtn.addEventListener('click', () => {
+            toggleBtn.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+    }
+});
+
+function toggleDropdown(event) {
+    if (window.innerWidth <= 992) {
+        event.preventDefault();
+        const parentLi = event.target.closest('.dropdown');
+        if (parentLi) {
+            parentLi.classList.toggle('open');
+        }
+    }
+}
