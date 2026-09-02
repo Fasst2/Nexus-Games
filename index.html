@@ -14,7 +14,10 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
 </head>
 <body>
-
+<!-- BARRA DE COTIZACIÓN GLOBAL -->
+<div class="exchange-banner" style="background: #1f6feb; color: #ffffff; text-align: center; padding: 6px 10px; font-size: 0.85rem; font-weight: 600; width: 100%;">
+    💱 Tipo de cambio de referencia: 1 USD = $<span id="banner-exchange-rate">1480</span> ARS (Cotización oficial / tienda)
+</div>
     <header class="navbar">
         <div class="container navbar-content">
             <a href="#" class="logo">
@@ -97,10 +100,16 @@
             </nav>
 
             <div class="nav-actions">
-                <button class="cart-button" id="cart-btn" onclick="toggleCartModal()">
-                    🛒 Carrito (<span id="cart-count">0</span>)
-                </button>
-            </div>
+    <!-- Selector de Moneda -->
+    <div class="currency-selector" style="display: inline-flex; background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 2px; margin-right: 10px;">
+        <button id="btn-currency-ars" onclick="changeCurrency('ARS')" style="background: none; border: none; color: #c9d1d9; padding: 4px 8px; font-size: 0.8rem; font-weight: bold; cursor: pointer; border-radius: 4px;">ARS</button>
+        <button id="btn-currency-usd" onclick="changeCurrency('USD')" style="background: none; border: none; color: #8b949e; padding: 4px 8px; font-size: 0.8rem; font-weight: bold; cursor: pointer; border-radius: 4px;">USD</button>
+    </div>
+
+    <button class="cart-button" id="cart-btn" onclick="toggleCartModal()">
+        🛒 Carrito (<span id="cart-count">0</span>)
+    </button>
+</div>
         </div>
     </header>
 
@@ -139,13 +148,12 @@
         </section>
     </main>
 
-    <!-- MODAL LANDING PS PLUS (ESTILO COMPLETO DINÁMICO) -->
+    <!-- MODAL LANDING PS PLUS -->
     <div id="psplus-landing-modal" class="modal-overlay">
         <div class="modal-content psplus-modal-content">
             <span class="close-modal" onclick="closePSPlusModal()">&times;</span>
             
             <div class="psplus-container">
-                <!-- TITULO Y SELECTOR DE CONSOLA/MONEDA -->
                 <div class="psplus-header">
                     <span class="psplus-subtitle" id="psplus-subtitle">PLAYSTATION PLUS · MEMBRESÍA BASE</span>
                     <h2 id="psplus-title">PS Plus Essential</h2>
@@ -156,16 +164,15 @@
                             <button class="toggle-btn active" id="btn-ps4" onclick="setPSPlusConsole('PS4')">🎮 PS4</button>
                             <button class="toggle-btn" id="btn-ps5" onclick="setPSPlusConsole('PS5')">🎮 PS5</button>
                         </div>
-                        <div class="toggle-group">
-                            <button class="toggle-btn active">🇦🇷 ARS</button>
+                        <div class="toggle-group" id="psplus-currency-toggles">
+                            <button class="toggle-btn active" id="psplus-btn-ars" onclick="changeCurrency('ARS')">🇦🇷 ARS</button>
+                            <button class="toggle-btn" id="psplus-btn-usd" onclick="changeCurrency('USD')">🇺🇸 USD</button>
                         </div>
                     </div>
                     <p class="platform-note">Mostrando precios para <strong id="current-console-label">PlayStation 4</strong></p>
                 </div>
 
-                <!-- TARJETAS DE PRECIOS DINÁMICAS -->
                 <div class="pricing-grid">
-                    <!-- 1 MES -->
                     <div class="price-card">
                         <span class="plan-duration">1 MES</span>
                         <div class="plan-price" id="price-1m">$11.000</div>
@@ -174,7 +181,6 @@
                         <button class="btn-plan-outline" onclick="addPSPlusToCart(1)">OBTENER AHORA</button>
                     </div>
 
-                    <!-- 3 MESES (DESTACADO) -->
                     <div class="price-card featured">
                         <div class="featured-badge">⭐ MÁS POPULAR</div>
                         <span class="plan-duration">3 MESES</span>
@@ -184,7 +190,6 @@
                         <button class="btn-plan-filled" onclick="addPSPlusToCart(3)">OBTENER AHORA</button>
                     </div>
 
-                    <!-- 12 MESES -->
                     <div class="price-card">
                         <span class="plan-duration">12 MESES</span>
                         <div class="plan-price" id="price-12m">$49.000</div>
@@ -194,7 +199,6 @@
                     </div>
                 </div>
 
-                <!-- PARRILLA DE BENEFICIOS DE 2 COLUMNAS -->
                 <div class="benefits-section">
                     <span class="section-label">¿QUÉ INCLUYE?</span>
                     <h3>BENEFICIOS <span class="highlight" id="tier-highlight-name">ESSENTIAL</span></h3>
@@ -204,7 +208,6 @@
                     </div>
                 </div>
 
-                <!-- TABLA COMPARATIVA -->
                 <div class="comparison-container">
                     <h3>¿QUÉ INCLUYE CADA PLAN DE PS PLUS?</h3>
                     <div class="table-responsive">
@@ -229,7 +232,6 @@
                     </div>
                 </div>
 
-                <!-- BANNER DE LLAMADO A LA ACCIÓN -->
                 <div class="cta-banner">
                     <h2>¿LISTO PARA <span class="highlight">JUGAR ONLINE?</span></h2>
                     <p>Activá tu membresía hoy. <strong>Entrega inmediata a tu Gmail, en pesos y sin impuestos.</strong></p>
@@ -362,7 +364,7 @@
         </div>
     </div>
 
-    <!-- MODAL CARRITO -->
+    <!-- MODAL CARRITO & PAGO -->
     <div class="modal-overlay" id="cart-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -381,7 +383,13 @@
                 </div>
             </div>
 
+            <!-- VISTA DE PAGO CORREGIDA -->
             <div id="payment-view" class="hidden">
+                <div style="background: rgba(88, 166, 255, 0.1); border: 1px solid #58a6ff; border-radius: 8px; padding: 12px; margin-bottom: 20px; text-align: center;">
+                    <span style="color: #8b949e; font-size: 0.85rem; display: block; margin-bottom: 4px;">Número de Pedido Único:</span>
+                    <strong id="order-id-display" style="color: #58a6ff; font-size: 1.4rem; letter-spacing: 1px;">#NX-0000</strong>
+                </div>
+
                 <p class="auth-subtitle">Realizá la transferencia por el total acumulado a la siguiente cuenta:</p>
                 
                 <div class="transfer-card">
@@ -406,7 +414,7 @@
                 </div>
 
                 <div class="transfer-instructions">
-                    <p>⚠️ <strong>Paso final:</strong> Enviá el comprobante por WhatsApp indicándonos tu correo de Gmail para enviarte los datos de acceso a tu juego.</p>
+                    <p>⚠️ <strong>Paso final:</strong> Enviá el comprobante por WhatsApp adjuntando tu <strong>Número de Pedido</strong> y tu correo de Gmail para enviarte los datos de acceso a tu juego.</p>
                 </div>
 
                 <div class="payment-actions">
@@ -424,6 +432,46 @@
     </footer>
 
     <div id="toast-container" class="toast-container"></div>
+
+    <!-- CHATBOT FLOTANTE DE IA (NEXUSBOT) -->
+    <div class="chat-widget" id="chat-widget">
+        <!-- Botón flotante -->
+        <button class="chat-toggle-btn" id="chat-toggle-btn" onclick="toggleChatBot()" aria-label="Abrir asistente virtual">
+            🤖 <span class="chat-badge">IA</span>
+        </button>
+
+        <!-- Ventana flotante del Chat -->
+        <div class="chat-box hidden" id="chat-box">
+            <div class="chat-header">
+                <div class="chat-header-info">
+                    <span class="bot-avatar">🤖</span>
+                    <div>
+                        <strong>NexusBot</strong>
+                        <small class="bot-status">🟢 En línea · Asistente Oficial</small>
+                    </div>
+                </div>
+                <button class="chat-close-btn" onclick="toggleChatBot()">&times;</button>
+            </div>
+
+            <div class="chat-messages" id="chat-messages">
+                <div class="chat-msg bot">
+                    ¡Hola! 👋 Soy <strong>NexusBot</strong>, el asistente virtual de <strong>Nexus Games</strong>.<br><br>
+                    ¿En qué puedo ayudarte hoy? Podés preguntarme sobre:
+                    <ul style="margin-top: 6px; padding-left: 18px; line-height: 1.5;">
+                        <li>Diferencias entre Cuentas Primarias y Secundarias</li>
+                        <li>Medios de pago y transferencias</li>
+                        <li>Tiempos y forma de entrega por Gmail</li>
+                        <li>Garantía y juegos de PS4/PS5</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="chat-input-area">
+                <input type="text" id="chat-user-input" placeholder="Escribí tu duda sobre la tienda..." onkeypress="handleChatKeyPress(event)">
+                <button onclick="sendChatMessage()" aria-label="Enviar consulta">➤</button>
+            </div>
+        </div>
+    </div>
 
     <script src="js/main.js"></script>
 </body>
