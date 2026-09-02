@@ -6581,14 +6581,50 @@ const products = [
 
 ];
 
+// ==========================================================================
 // ESTADOS GLOBALES DE NAVEGACIÓN Y CARRITO
-let cart = [];
+// ==========================================================================
+let cart = JSON.parse(localStorage.getItem('nexus_cart')) || [];
 let currentFilter = 'all';
 let currentSort = 'default';
 let currentDetailProduct = null;
 let selectedAccountType = 'Primaria';
 let currentPage = 1;
-const itemsPerPage = 12; // Cantidad máxima de juegos por página
+const itemsPerPage = 12;
+
+// Guardar en la memoria del navegador
+function saveCartToLocalStorage() {
+    localStorage.setItem('nexus_cart', JSON.stringify(cart));
+}
+
+// ==========================================================================
+// GESTIÓN DEL CARRITO (AGREGAR, ELIMINAR, VACÍAR)
+// ==========================================================================
+function addToCart(product) {
+    cart.push(product);
+    saveCartToLocalStorage(); // Persiste el cambio
+    updateCartUI();
+}
+
+function removeFromCart(index) {
+    cart.splice(index, 1);
+    saveCartToLocalStorage(); // Persiste el cambio
+    updateCartUI();
+}
+
+function clearCart() {
+    cart = [];
+    saveCartToLocalStorage(); // Persiste el cambio
+    updateCartUI();
+}
+
+// ==========================================================================
+// INICIALIZACIÓN AUTOMÁTICA AL CARGAR LA PÁGINA
+// ==========================================================================
+document.addEventListener('DOMContentLoaded', () => {
+    // Restaura los productos guardados en la pantalla apenas abre la web
+    updateCartUI(); 
+});
 
 // CALCULA PRECIOS SEGÚN REGLA GENERAL
 function getProductPrices(product) {
@@ -7052,3 +7088,119 @@ function toggleDropdown(event) {
         }
     }
 }
+// CONFIGURACIÓN Y ESTADO DE PS PLUS
+let currentPSTier = 'Essential';
+let currentPSConsole = 'PS4';
+
+// Precios de referencia (Ajustá según tus valores)
+const psPlusPrices = {
+    Essential: {
+        PS4: { 1: 11000, 3: 22000, 12: 49000 },
+        PS5: { 1: 13000, 3: 26000, 12: 55000 }
+    },
+    Extra: {
+        PS4: { 1: 16000, 3: 35000, 12: 78000 },
+        PS5: { 1: 18000, 3: 39000, 12: 85000 }
+    },
+    Deluxe: {
+        PS4: { 1: 19000, 3: 42000, 12: 92000 },
+        PS5: { 1: 22000, 3: 48000, 12: 99000 }
+    }
+};
+
+const psPlusBenefits = {
+    Essential: [
+        { icon: '🌐', title: 'Multijugador Online', desc: 'Jugá con amigos y competí en red en todos tus juegos.' },
+        { icon: '🎮', title: 'Juegos Gratis Mensuales', desc: 'Accedé a 3 juegos mensuales para añadir a tu biblioteca.' },
+        { icon: '☁️', title: 'Almacenamiento en la Nube', desc: 'Guardá tus partidas de forma segura en los servidores de PlayStation.' },
+        { icon: '🏷️', title: 'Descuentos Exclusivos', desc: 'Ofertas y descuentos extra en ofertas de la PS Store.' }
+    ],
+    Extra: [
+        { icon: '🌐', title: 'Multijugador Online', desc: 'Acceso a partidas multijugador online sin restricciones.' },
+        { icon: '📚', title: 'Catálogo de +400 Juegos', desc: 'Biblioteca masiva de títulos de PS4 y PS5 listos para descargar.' },
+        { icon: '🎮', title: 'Juegos Mensuales', desc: 'Conservá los juegos mensuales estándar de Essential.' },
+        { icon: '💥', title: 'Ubisoft+ Classics', desc: 'Acceso a los mejores títulos del catálogo de Ubisoft.' }
+    ],
+    Deluxe: [
+        { icon: '🏛️', title: 'Catálogo de Clásicos', desc: 'Reviví cientos de juegos legendarios de PS1, PS2 y PSP.' },
+        { icon: '⏱️', title: 'Pruebas de Juegos', desc: 'Probá lanzamientos de primer nivel por tiempo limitado antes de comprar.' },
+        { icon: '📚', title: 'Catálogo Completo +400 Juegos', desc: 'Acceso ilimitado a todo el catálogo del plan Extra.' },
+        { icon: '🌐', title: 'Todos los Beneficios Base', desc: 'Incluye multijugador, descuentos y guardado en la nube.' }
+    ]
+};
+
+function openPSPlusLanding(tier, event) {
+    if(event) event.preventDefault();
+    currentPSTier = tier;
+    renderPSPlusModal();
+    document.getElementById('psplus-landing-modal').classList.add('active');
+}
+
+function closePSPlusModal() {
+    document.getElementById('psplus-landing-modal').classList.remove('active');
+}
+
+function setPSPlusConsole(consoleType) {
+    currentPSConsole = consoleType;
+    document.getElementById('btn-ps4').classList.toggle('active', consoleType === 'PS4');
+    document.getElementById('btn-ps5').classList.toggle('active', consoleType === 'PS5');
+    document.getElementById('current-console-label').innerText = consoleType === 'PS4' ? 'PlayStation 4' : 'PlayStation 5';
+    
+    // Actualizar badges
+    document.querySelectorAll('.console-badge').forEach(b => b.innerText = consoleType);
+    updatePSPlusPrices();
+}
+
+function renderPSPlusModal() {
+    document.getElementById('psplus-title').innerText = `PS Plus ${currentPSTier}`;
+    document.getElementById('tier-highlight-name').innerText = currentPSTier.toUpperCase();
+    
+    // Resaltar columna en la tabla comparativa
+    ['essential', 'extra', 'deluxe'].forEach(col => {
+        const el = document.getElementById(`th-${col}`);
+        if(el) el.classList.toggle('active-col', col.toLowerCase() === currentPSTier.toLowerCase());
+    });
+
+    // Cargar beneficios
+    const container = document.getElementById('benefits-grid-container');
+    container.innerHTML = psPlusBenefits[currentPSTier].map(b => `
+        <div class="benefit-card">
+            <div class="benefit-icon">${b.icon}</div>
+            <div>
+                <h4>${b.title}</h4>
+                <p>${b.desc}</p>
+            </div>
+        </div>
+    `).join('');
+
+    updatePSPlusPrices();
+}
+
+function updatePSPlusPrices() {
+    const prices = psPlusPrices[currentPSTier][currentPSConsole];
+    document.getElementById('price-1m').innerText = `$${prices[1].toLocaleString('es-AR')} ARS`;
+    document.getElementById('price-3m').innerText = `$${prices[3].toLocaleString('es-AR')} ARS`;
+    document.getElementById('price-12m').innerText = `$${prices[12].toLocaleString('es-AR')} ARS`;
+}
+
+function addPSPlusToCart(months) {
+    const price = psPlusPrices[currentPSTier][currentPSConsole][months];
+    const item = {
+        id: `psplus-${currentPSTier.toLowerCase()}-${currentPSConsole.toLowerCase()}-${months}m`,
+        title: `PS Plus ${currentPSTier} (${months} ${months === 1 ? 'Mes' : 'Meses'}) - ${currentPSConsole}`,
+        price: price,
+        type: 'Membresía'
+    };
+    
+    // Integración con tu función principal de carrito (Ajustar a tu función addCartItem existente)
+    if (typeof addToCart === 'function') {
+        addToCart(item);
+    } else {
+        alert(`Añadido al carrito: ${item.title} por $${price.toLocaleString('es-AR')} ARS`);
+    }
+    closePSPlusModal();
+}
+// Ejecutar cuando el DOM esté listo para restaurar el carrito guardado
+document.addEventListener('DOMContentLoaded', () => {
+    updateCartUI(); // Cambiá este nombre si tu función de actualizar interfaz tiene otro nombre
+});
