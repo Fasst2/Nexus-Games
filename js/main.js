@@ -1,8 +1,388 @@
+// ==========================================
+// 1. CONTROL DE COTIZACIÓN USD AUTOMÁTICA (24HS)
+// ==========================================
+let EXCHANGE_RATE_USD = 1480; // Cotización por defecto si falla la red
+let currentCurrency = localStorage.getItem('nexus_currency') || 'ARS';
+
+async function updateExchangeRate() {
+    const lastFetch = localStorage.getItem('nexus_usd_fetch_time');
+    const savedRate = localStorage.getItem('nexus_usd_rate');
+    const now = new Date().getTime();
+    const TWENTY_FOUR_HOURS = 86400000; // 24hs en ms
+
+    if (savedRate && lastFetch && (now - parseInt(lastFetch) < TWENTY_FOUR_HOURS)) {
+        EXCHANGE_RATE_USD = parseFloat(savedRate);
+        return;
+    }
+
+    try {
+        const response = await fetch('https://dolarapi.com/v1/dolares/cripto');
+        const data = await response.json();
+
+        if (data && data.venta) {
+            EXCHANGE_RATE_USD = parseFloat(data.venta);
+            localStorage.setItem('nexus_usd_rate', EXCHANGE_RATE_USD.toString());
+            localStorage.setItem('nexus_usd_fetch_time', now.toString());
+        }
+    } catch (error) {
+        if (savedRate) EXCHANGE_RATE_USD = parseFloat(savedRate);
+    }
+}
+
+// Función global para dar formato a los precios
+function formatPrice(priceInARS) {
+    if (currentCurrency === 'USD') {
+        const usdValue = priceInARS / EXCHANGE_RATE_USD;
+        return `US$ ${usdValue.toFixed(2)}`;
+    }
+    return `$ ${priceInARS.toLocaleString('es-AR')}`;
+}
+
+function changeCurrency(newCurrency) {
+    currentCurrency = newCurrency;
+    localStorage.setItem('nexus_currency', newCurrency);
+
+    // Actualizar estilos visuales de los botones en la Navbar
+    const btnArs = document.getElementById('btn-currency-ars');
+    const btnUsd = document.getElementById('btn-currency-usd');
+    if (btnArs) {
+        btnArs.style.background = newCurrency === 'ARS' ? '#238636' : 'none';
+        btnArs.style.color = newCurrency === 'ARS' ? '#ffffff' : '#8b949e';
+    }
+    if (btnUsd) {
+        btnUsd.style.background = newCurrency === 'USD' ? '#238636' : 'none';
+        btnUsd.style.color = newCurrency === 'USD' ? '#ffffff' : '#8b949e';
+    }
+
+    // Actualizar botones dentro del modal de PS Plus si existe
+    const psPlusArs = document.getElementById('psplus-btn-ars');
+    const psPlusUsd = document.getElementById('psplus-btn-usd');
+    if (psPlusArs) psPlusArs.classList.toggle('active', newCurrency === 'ARS');
+    if (psPlusUsd) psPlusUsd.classList.toggle('active', newCurrency === 'USD');
+
+    // Refrescar todas las vistas de la tienda
+    if (typeof renderProducts === 'function') renderProducts();
+    if (typeof updateCartUI === 'function') updateCartUI();
+    if (typeof updatePSPlusPrices === 'function') updatePSPlusPrices();
+}
 // LISTA GENERAL DE PRODUCTOS CON INFORMACIÓN DETALLADA
 const products = [
+    // PRE-VENTAS
+    {
+        id: 1,
+        name: "Beast of Reincarnation PS5",
+        platform: "Pre-Venta",
+        price: 40000,
+        image: "https://via.placeholder.com/460x215?text=Beast+of+Reincarnation",
+        description: {
+            intro: "Reservá Beast of Reincarnation para PS5 y asegurá tu acceso desde el día de lanzamiento.",
+            features: [
+                "Acceso completo desde el día de estreno.",
+                "Optimizado para la tecnología de PlayStation 5.",
+                "Combates dinámicos y narrativa inmersiva."
+            ],
+            synopsis: "Embárcate en una aventura épica de acción donde las fuerzas de la reencarnación y el combate estratégico se combinan en un mundo fantástico.",
+            specs: {
+                developer: "Por confirmar",
+                publisher: "Por confirmar",
+                platforms: "PS5",
+                release: "2026 / Pre-Venta",
+                rating: "Pendiente",
+                modes: "Un jugador"
+            }
+        }
+    },
+    {
+        id: 2,
+        name: "Call of Duty Modern Warfare 4 PS5",
+        platform: "Pre-Venta",
+        price: 45000,
+        image: "https://via.placeholder.com/460x215?text=COD+Modern+Warfare+4",
+        description: {
+            intro: "La experiencia de acción militar definitiva regresa con la entrega más esperada de la saga Modern Warfare.",
+            features: [
+                "Campaña cinematográfica de alto impacto.",
+                "Multijugador de última generación con mapas renovados.",
+                "Soporte completo para gatillos adaptativos del DualSense."
+            ],
+            synopsis: "Unite a la Fuerza de Tareas en operaciones globales de encubrimiento, combatiendo amenazas internacionales con armamento de vanguardia.",
+            specs: {
+                developer: "Infinity Ward",
+                publisher: "Activision",
+                platforms: "PS5",
+                release: "2026 / Pre-Venta",
+                rating: "Mature 17+",
+                modes: "Un jugador / Multijugador Online"
+            }
+        }
+    },
+    {
+        id: 3,
+        name: "Captain Tsubasa 2 World Fighters PS5",
+        platform: "Pre-Venta",
+        price: 50000,
+        image: "https://via.placeholder.com/460x215?text=Captain+Tsubasa+2",
+        description: {
+            intro: "Revive la emoción del fútbol de supercampeones a nivel mundial con tiros especiales y animaciones impresionantes.",
+            features: [
+                "Nuevas selecciones e íconos del fútbol internacional.",
+                "Modo historia ampliado con decisiones de juego.",
+                "Gráficos estilo anime en alta definición."
+            ],
+            synopsis: "Lleva a Oliver Atom y a su equipo a la cima del torneo mundial, ejecutando tiros imposibles y atajadas espectaculares en tiempo real.",
+            specs: {
+                developer: "Tamsoft",
+                publisher: "Bandai Namco",
+                platforms: "PS5",
+                release: "2026 / Pre-Venta",
+                rating: "Everyone 10+",
+                modes: "Un jugador / Multijugador"
+            }
+        }
+    },
+    {
+        id: 4,
+        name: "FC 27 PS5",
+        platform: "Pre-Venta",
+        price: 50000,
+        image: "https://via.placeholder.com/460x215?text=FC+27",
+        description: {
+            intro: "El simulador de fútbol más realista del mundo evoluciona para la nueva temporada.",
+            features: [
+                "Motor de movimiento y física de pelota mejorado.",
+                "Modos Ultimate Team y Carrera de Director Técnico renovados.",
+                "Licencias oficiales de ligas, clubes y estadios globales."
+            ],
+            synopsis: "Siente cada entrada, pase y gol con una precisión técnica superior, llevando a tu club a la gloria en las competiciones más prestigiosas del planeta.",
+            specs: {
+                developer: "EA Canada",
+                publisher: "EA Sports",
+                platforms: "PS5",
+                release: "2026 / Pre-Venta",
+                rating: "Everyone",
+                modes: "Un jugador / Multijugador Online"
+            }
+        }
+    },
+    {
+        id: 5,
+        name: "Hell Let Loose Vietnam PS5",
+        platform: "Pre-Venta",
+        price: 26000,
+        image: "https://via.placeholder.com/460x215?text=Hell+Let+Loose+Vietnam",
+        description: {
+            intro: "La aclamada franquicia de combate táctico se traslada a la densa selva y los conflictos de la Guerra de Vietnam.",
+            features: [
+                "Batallas masivas de 50 contra 50 jugadores.",
+                "Nuevos vehículos, helicópteros y armamento de época.",
+                "Comunicación por voz estratégica y roles de escuadrón."
+            ],
+            synopsis: "Sumérgete en un simulador bélico implacable donde el trabajo en equipo, la gestión de recursos y la estrategia determinan el control del territorio.",
+            specs: {
+                developer: "Expression Games",
+                publisher: "Team17",
+                platforms: "PS5",
+                release: "2026 / Pre-Venta",
+                rating: "Mature 17+",
+                modes: "Multijugador Online"
+            }
+        }
+    },
+    {
+        id: 6,
+        name: "MARVEL Tōkon Fighting Souls PS5",
+        platform: "Pre-Venta",
+        price: 40000,
+        image: "https://via.placeholder.com/460x215?text=MARVEL+Tokon+Fighting+Souls",
+        description: {
+            intro: "Enfrentamientos únicos entre los héroes y villanos de Marvel adaptados a un dinámico estilo de pelea anime.",
+            features: [
+                "Plantilla completa con los héroes más icónicos de la franquicia.",
+                "Combates fluidos a 60 FPS con combos visualmente espectaculares.",
+                "Código de red Rollback para enfrentamientos online sin lag."
+            ],
+            synopsis: "Desata el verdadero potencial de los superhéroes en combates uno contra uno, dominando habilidades místicas, tecnología avanzada y fuerza sobrehumana.",
+            specs: {
+                developer: "Por confirmar",
+                publisher: "Marvel Games",
+                platforms: "PS5",
+                release: "2026 / Pre-Venta",
+                rating: "Teen",
+                modes: "Un jugador / Multijugador"
+            }
+        }
+    },
+    {
+        id: 7,
+        name: "Marvel's Wolverine PS5",
+        platform: "Pre-Venta",
+        price: 45000,
+        image: "https://via.placeholder.com/460x215?text=Marvels+Wolverine",
+        description: {
+            intro: "Sentí el poder salvaje e indomable de Logan en una aventura de acción visceral de los creadores de Marvel's Spider-Man.",
+            features: [
+                "Desarrollado por Insomniac Games en exclusiva para PS5.",
+                "Combate cuerpo a cuerpo sangriento, ágil y de ritmo acelerado.",
+                "Historia profunda e independiente centrada en el mutante de garras de adamantium."
+            ],
+            synopsis: "Encarna a Wolverine y desata la furia mientras te abres paso a través de conspiraciones y enemigos peligrosos en un viaje oscuro e intenso.",
+            specs: {
+                developer: "Insomniac Games",
+                publisher: "Sony Interactive Entertainment",
+                platforms: "PS5",
+                release: "2026 / Pre-Venta",
+                rating: "Mature 17+",
+                modes: "Un jugador"
+            }
+        }
+    },
+    {
+        id: 8,
+        name: "Metal Gear Solid: Master Collection Vol. 2 PS5",
+        platform: "Pre-Venta",
+        price: 35000,
+        image: "https://via.placeholder.com/460x215?text=Metal+Gear+Solid+Vol+2",
+        description: {
+            intro: "La continuación de la recopilación definitiva de la saga seminal de espionaje táctico y sigilo de Konami.",
+            features: [
+                "Incluye entregas icónicas remasterizadas con resolución actualizada.",
+                "Material de archivo, libros de guion y galerías de arte incluidas.",
+                "Rendimiento optimizado para consolas de última generación."
+            ],
+            synopsis: "Revive los momentos más legendarios del espionaje militar, infiltrándote en instalaciones enemigas y descubriendo conspiraciones mundiales.",
+            specs: {
+                developer: "Konami",
+                publisher: "Konami",
+                platforms: "PS5",
+                release: "2026 / Pre-Venta",
+                rating: "Mature 17+",
+                modes: "Un jugador"
+            }
+        }
+    },
+    {
+        id: 9,
+        name: "NBA 2K27 PS5 (Textos en Español)",
+        platform: "Pre-Venta",
+        price: 50000,
+        image: "https://via.placeholder.com/460x215?text=NBA+2K27",
+        description: {
+            intro: "Viví la emoción del básquet profesional de la NBA con el estándar más alto de realismo gráfico y jugable.",
+            features: [
+                "Totalmente localizado con textos en español.",
+                "Modo Mi Carrera con narrativa inmersiva y personalización de jugador.",
+                "Mecanicas ProPLAY mejoradas para una respuesta más fiel."
+            ],
+            synopsis: "Domina la duela con tus estrellas favoritas o crea tu propia leyenda desde las ligas menores hasta conseguir el anillo de campeonato.",
+            specs: {
+                developer: "Visual Concepts",
+                publisher: "2K",
+                platforms: "PS5",
+                release: "2026 / Pre-Venta",
+                rating: "Everyone",
+                modes: "Un jugador / Multijugador Online"
+            }
+        }
+    },
+    {
+        id: 10,
+        name: "Persona 4 Revival PS5",
+        platform: "Pre-Venta",
+        price: 58000,
+        image: "https://via.placeholder.com/460x215?text=Persona+4+Revival",
+        description: {
+            intro: "El aclamado e inolvidable JRPG de culto regresa completamente reconstruido y modernizado para PlayStation 5.",
+            features: [
+                "Apartado visual y sistema de combate completamente rehechos.",
+                "Banda sonora icónica remasterizada y nuevos diálogos de voz.",
+                "Exploración de mazmorras y simulación de vida escolar mejorada."
+            ],
+            synopsis: "Investiga una serie de misteriosos asesinatos en un apacible pueblo rural mientras exploras la dimensión del Canal de la Televisión junto a tu grupo de amigos.",
+            specs: {
+                developer: "ATLUS",
+                publisher: "SEGA",
+                platforms: "PS5",
+                release: "2026 / Pre-Venta",
+                rating: "Mature 17+",
+                modes: "Un jugador"
+            }
+        }
+    },
+    {
+        id: 11,
+        name: "Star Wars Galactic Racer PS5",
+        platform: "Pre-Venta",
+        price: 45000,
+        image: "https://via.placeholder.com/460x215?text=Star+Wars+Galactic+Racer",
+        description: {
+            intro: "Velocidad extrema y carreras de naves de alta potencia a lo largo de los planetas más peligrosos de la galaxia.",
+            features: [
+                "Naves totalmente personalizables en piezas y rendimiento.",
+                "Pistas desafiantes en entornos emblemáticos de la franquicia.",
+                "Sensación de velocidad envolvente potenciada por audio 3D."
+            ],
+            synopsis: "Ponte al volante de las vainas y naves más rápidas del universo, desafiando a pilotos de todas las especies en torneos clandestinos y oficiales.",
+            specs: {
+                developer: "Por confirmar",
+                publisher: "Lucasfilm Games",
+                platforms: "PS5",
+                release: "2026 / Pre-Venta",
+                rating: "Everyone 10+",
+                modes: "Un jugador / Multijugador Online"
+            }
+        }
+    },
+{
+        id: 12,
+        name: "The Blood of Dawnwalker PS5",
+        platform: "Pre-Venta",
+        price: 50000,
+        image: "https://via.placeholder.com/460x215?text=The+Blood+of+Dawnwalker",
+        description: {
+            intro: "Misterio, fantasía oscura y combates intensos en una nueva aventura épica diseñada para PS5.",
+            features: [
+                "Mundo abierto con narrativa ramificada.",
+                "Sistema de combate dinámico con magia y armas de melé.",
+                "Rendimiento optimizado con tiempos de carga ultrarrápidos."
+            ],
+            synopsis: "Sigue los pasos del Dawnwalker en un mundo al borde del colapso, enfrentando criaturas de la noche y descubriendo secretos ancestrales.",
+            specs: {
+                developer: "Por confirmar",
+                publisher: "Por confirmar",
+                platforms: "PS5",
+                release: "2026 / Pre-Venta",
+                rating: "Mature 17+",
+                modes: "Un jugador"
+            }
+        }
+    },
+    {
+        id: 13,
+        name: "Tomb Raider: Legacy of Atlantis PS5",
+        platform: "Pre-Venta",
+        price: 45000,
+        image: "https://via.placeholder.com/460x215?text=Tomb+Raider+Legacy+of+Atlantis",
+        description: {
+            intro: "Lara Croft regresa en una emocionante búsqueda por desentrañar el mito y los misterios de la Atlántida.",
+            features: [
+                "Exploración de ruinas antiguas y resolución de acertijos complejos.",
+                "Mecánicas de acrobacia y escalada de última generación.",
+                "Aprovechamiento completo de la retroalimentación háptica del DualSense."
+            ],
+            synopsis: "Acompaña a la icónica arqueóloga mientras recorre sitios olvidados y combate a una misteriosa organización que busca el poder del reino perdido.",
+            specs: {
+                developer: "Crystal Dynamics",
+                publisher: "Amazon Games",
+                platforms: "PS5",
+                release: "2026 / Pre-Venta",
+                rating: "Teen",
+                modes: "Un jugador"
+            }
+        }
+    },
     // COMBOS Y OFERTAS
     { 
-        id: 101, 
+        id: 12, 
         name: "Mortal Kombat 11 + Injustice 2", 
         platform: "Combos", 
         price: 24500, 
@@ -11,7 +391,7 @@ const products = [
             intro: "Obtené dos de los mejores títulos de lucha de NetherRealm Studios en un solo paquete definitivo.",
             features: [
                 "Lucha con plantillas completas de superhéroes y luchadores icónicos.",
-                "Modos historia cinematográficos y combate online altamente competitivo.",
+                "Modos historia cinematográficos y combate online highly competitivo.",
                 "Sistemas de personalización de personajes y equipamiento."
             ],
             synopsis: "Disfruta de batallas épicas cruzando el universo de Mortal Kombat con el de DC Comics, dominando variaciones de combate únicas y cinemáticas de alta calidad.",
@@ -6629,7 +7009,13 @@ function getProductPrices(product) {
 }
 
 // INICIALIZACIÓN ÚNICA AL CARGAR EL DOM
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // 1. Obtiene cotización USD y sincroniza el selector
+    await updateExchangeRate();
+    const selector = document.getElementById('currency-select');
+    if (selector) selector.value = currentCurrency;
+
+    // 2. Renderiza el carrito y los productos con la moneda cargada
     updateCartUI();
     renderProducts();
 
@@ -6715,7 +7101,7 @@ function renderProducts(filter = currentFilter, searchTerm = '') {
             <img src="${product.image}" alt="${product.name}" class="product-image" onclick="openProductDetail(${product.id})" style="cursor:pointer;" loading="lazy" referrerpolicy="no-referrer">
             <div class="product-info">
                 <h3 class="product-title" onclick="openProductDetail(${product.id})" style="cursor:pointer;">${product.name}</h3>
-                <div class="product-price">$${product.price.toLocaleString('es-AR')} ARS</div>
+                <div class="product-price">${formatPrice(product.price)}</div>
                 <button class="btn-add-cart" onclick="openProductDetail(${product.id})">Ver Opciones / Comprar</button>
             </div>
         `;
@@ -6865,7 +7251,7 @@ function openProductDetail(productId) {
 
     if (prices.secondary === null) {
         if (selectorContainer) selectorContainer.style.display = 'none';
-        document.getElementById('detail-price').innerText = `$${prices.primary.toLocaleString('es-AR')} ARS`;
+        document.getElementById('detail-price').innerText = formatPrice(prices.primary);
     } else {
         if (selectorContainer) selectorContainer.style.display = 'flex';
         const primaryRadio = document.querySelector('input[name="accountType"][value="Primaria"]');
@@ -6899,7 +7285,7 @@ function updateDetailPrice(type) {
     if (!currentDetailProduct) return;
     const prices = getProductPrices(currentDetailProduct);
     const selectedPrice = type === 'Primaria' ? prices.primary : prices.secondary;
-    document.getElementById('detail-price').innerText = `$${selectedPrice.toLocaleString('es-AR')} ARS`;
+    document.getElementById('detail-price').innerText = formatPrice(selectedPrice);
 }
 
 function closeProductDetail() {
@@ -6969,7 +7355,7 @@ function updateCartUI() {
                     <span style="font-size:0.85rem; color:#8b949e;">${item.platform} ${item.accountType && item.accountType !== 'Única' ? `(${item.accountType})` : ''}</span>
                 </div>
                 <div style="display:flex; align-items:center; gap:10px;">
-                    <span style="color:#2ea043; font-weight:bold;">$${item.price.toLocaleString('es-AR')}</span>
+                    <span style="color:#2ea043; font-weight:bold;">${formatPrice(item.price)}</span>
                     <button onclick="removeFromCart(${index})" style="background:none; border:none; color:#f85149; cursor:pointer; font-weight:bold;">✕</button>
                 </div>
             `;
@@ -6977,7 +7363,7 @@ function updateCartUI() {
         });
     }
 
-    if (totalEl) totalEl.innerText = `$${total.toLocaleString('es-AR')} ARS`;
+    if (totalEl) totalEl.innerText = formatPrice(total);
 }
 
 function goToPayment() {
@@ -6986,19 +7372,52 @@ function goToPayment() {
         return;
     }
 
+    // Genera un ID de pedido único
+    const orderId = 'NX-' + Math.floor(1000 + Math.random() * 9000);
+
+    // Muestra el ID de pedido en la interfaz si existe
+    const orderDisplay = document.getElementById('order-id-display');
+    if (orderDisplay) {
+        orderDisplay.innerText = `#${orderId}`;
+    }
+
     document.getElementById('cart-view').classList.add('hidden');
     document.getElementById('payment-view').classList.remove('hidden');
 
     const total = cart.reduce((acc, i) => acc + i.price, 0);
-    let message = `¡Hola Nexus Games! Quisiera realizar la compra de:\n`;
+
+    // Actualiza el total visible en el resumen de pago
+    const summaryTotalEl = document.getElementById('payment-total');
+    if (summaryTotalEl) {
+        summaryTotalEl.innerText = formatPrice(total);
+    }
+
+    // REGISTRO EN LOCALSTORAGE
+    const orderData = {
+        id: orderId,
+        date: new Date().toLocaleString('es-AR'),
+        items: [...cart],
+        total: total,
+        currency: currentCurrency
+    };
+
+    let salesHistory = JSON.parse(localStorage.getItem('nexus_orders')) || [];
+    salesHistory.push(orderData);
+    localStorage.setItem('nexus_orders', JSON.stringify(salesHistory));
+
+    // Construcción del mensaje estructurado para WhatsApp
+    let message = `🛒 *NUEVO PEDIDO #${orderId} - NEXUS GAMES*\n\n`;
     cart.forEach(item => {
-        message += `- ${item.name} [${item.platform}] (${item.accountType || 'Única'}): $${item.price.toLocaleString('es-AR')} ARS\n`;
+        const typeStr = item.accountType && item.accountType !== 'Única' ? ` (${item.accountType})` : '';
+        message += `▪ ${item.name} [${item.platform}]${typeStr}: ${formatPrice(item.price)}\n`;
     });
-    message += `\nTotal: $${total.toLocaleString('es-AR')} ARS\nAdjunto comprobante de pago.`;
+    message += `\n*TOTAL:* ${formatPrice(total)}\n`;
+    message += `Moneda elegida: ${currentCurrency}\n\n`;
+    message += `¡Hola! Adjunto comprobante para coordinar el pago de este pedido.`;
 
     const encodedMsg = encodeURIComponent(message);
-    const wsBtn = document.getElementById('ws-btn');
-    if (wsBtn) wsBtn.href = `https://wa.me/5493765036949?text=${encodedMsg}`;
+    const wsBtn = document.getElementById('ws-btn') || document.getElementById('btn-send-whatsapp');
+    if (wsBtn) wsBtn.href = `https://wa.me/5493755298895?text=${encodedMsg}`;
 }
 
 function backToCart() {
@@ -7111,6 +7530,7 @@ function openPSPlusLanding(tier, event) {
     if(event) event.preventDefault();
     currentPSTier = tier;
     renderPSPlusModal();
+    updatePSPlusPrices(); // Asegura el formato de moneda al abrir
     document.getElementById('psplus-landing-modal').classList.add('active');
 }
 
@@ -7151,11 +7571,17 @@ function renderPSPlusModal() {
     updatePSPlusPrices();
 }
 
+// ACTUALIZACIÓN DE PRECIOS PS PLUS CON FORMATPRICE
 function updatePSPlusPrices() {
     const prices = psPlusPrices[currentPSTier][currentPSConsole];
-    document.getElementById('price-1m').innerText = `$${prices[1].toLocaleString('es-AR')} ARS`;
-    document.getElementById('price-3m').innerText = `$${prices[3].toLocaleString('es-AR')} ARS`;
-    document.getElementById('price-12m').innerText = `$${prices[12].toLocaleString('es-AR')} ARS`;
+    
+    const el1 = document.getElementById('price-1m');
+    const el3 = document.getElementById('price-3m');
+    const el12 = document.getElementById('price-12m');
+
+    if (el1) el1.innerText = formatPrice(prices[1]);
+    if (el3) el3.innerText = formatPrice(prices[3]);
+    if (el12) el12.innerText = formatPrice(prices[12]);
 }
 
 function addPSPlusToCart(months) {
@@ -7172,3 +7598,233 @@ function addPSPlusToCart(months) {
     closePSPlusModal();
     showToast(`"PS Plus ${currentPSTier}" agregado al carrito`);
 }
+// ==========================================
+// CHATBOT INTELIGENTE CON INDICADOR Y SONIDO
+// ==========================================
+
+// Audio sintético ultraliviano (sin archivos externos)
+function playChatSound() {
+    try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // Nota D5
+        gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.2);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.2);
+    } catch (e) {
+        // Silencioso en caso de bloqueo por política de autoplays
+    }
+}
+
+function toggleChatBot() {
+    const chatBox = document.getElementById('chat-box');
+    chatBox.classList.toggle('hidden');
+    if (!chatBox.classList.contains('hidden')) {
+        document.getElementById('chat-user-input').focus();
+    }
+}
+
+function handleChatKeyPress(event) {
+    if (event.key === 'Enter') {
+        sendChatMessage();
+    }
+}
+
+function sendChatMessage() {
+    const input = document.getElementById('chat-user-input');
+    const text = input.value.trim();
+    if (!text) return;
+
+    // 1. Mostrar mensaje del usuario
+    appendMessage(text, 'user');
+    input.value = '';
+
+    // 2. Mostrar indicador "Escribiendo..."
+    showTypingIndicator();
+
+    // 3. Simular tiempo de respuesta (1.2 segundos para realismo)
+    setTimeout(() => {
+        removeTypingIndicator();
+        const botResponse = getNexusBotResponse(text);
+        appendMessage(botResponse, 'bot');
+        playChatSound(); // Sonido sutil de mensaje
+    }, 1200);
+}
+
+function showTypingIndicator() {
+    const container = document.getElementById('chat-messages');
+    const typingDiv = document.createElement('div');
+    typingDiv.id = 'chat-typing';
+    typingDiv.classList.add('chat-msg', 'bot', 'typing-msg');
+    typingDiv.innerHTML = `<span class="dot"></span><span class="dot"></span><span class="dot"></span>`;
+    container.appendChild(typingDiv);
+    container.scrollTop = container.scrollHeight;
+}
+
+function removeTypingIndicator() {
+    const indicator = document.getElementById('chat-typing');
+    if (indicator) indicator.remove();
+}
+
+// REEMPLAZAR ESTA FUNCIÓN COMPLETA:
+function appendMessage(text, sender) {
+    const container = document.getElementById('chat-messages');
+    const msgDiv = document.createElement('div');
+    msgDiv.classList.add('chat-msg', sender);
+    
+    // 1. Formateo de saltos de línea y negritas
+    let formattedText = text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+    // 2. Convertir menciones a links interactivos
+    formattedText = formattedText.replace(
+        /'PS PLUS'/g, 
+        `<a href="#psplus" onclick="navigateToSection('psplus')" class="chat-section-link">🎮 PS PLUS</a>`
+    );
+    
+    formattedText = formattedText.replace(
+        /'OFERTAS'/g, 
+        `<a href="#ofertas" onclick="navigateToSection('ofertas')" class="chat-section-link">🔥 OFERTAS</a>`
+    );
+
+    msgDiv.innerHTML = formattedText;
+    
+    container.appendChild(msgDiv);
+    container.scrollTop = container.scrollHeight;
+}
+
+// AGREGAR ESTA FUNCIÓN JUSTO DEBAJO DE APPENDMESSAGE:
+function navigateToSection(sectionId) {
+    const element = document.getElementById(sectionId);
+    if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+// Lógica de Respuestas
+function getNexusBotResponse(userInput) {
+    const q = userInput.toLowerCase();
+    const waLink = "https://wa.me/5493755298895?text=¡Hola!%20Vengo%20desde%20la%20web%20y%20tengo%20una%20consulta.";
+
+    // 1. Tarjetas de crédito y cuotas
+    if (q.includes('cuota') || q.includes('credito') || q.includes('tarjeta')) {
+        return "💳 **Tarjeta de Crédito / Cuotas:**\n\n" +
+               "De momento **no trabajamos con tarjeta de crédito ni pago en cuotas**.\n\n" +
+               "Únicamente aceptamos transferencias bancarias o desde billeteras virtuales en un solo pago a precio contado.";
+    }
+
+    // 2. Medios de pago generales
+    if (q.includes('pago') || q.includes('pagar') || q.includes('mercado') || q.includes('alias') || q.includes('cvu') || q.includes('transferencia') || q.includes('banco') || q.includes('uala')) {
+        return "💳 **Medios de Pago Aceptados:**\n\n" +
+               "Trabajamos con transferencias inmediatas desde cualquier banco o billetera virtual (**Mercado Pago, Ualá, Naranja X, Personal Pay, Brubank**, etc.).\n\n" +
+               "📌 *Nota: De momento no aceptamos tarjetas de crédito ni pagos en cuotas.*";
+    }
+
+    // 3. Tipos de cuentas
+    if (q.includes('primaria') || q.includes('secundaria') || q.includes('diferencia') || q.includes('tipo') || q.includes('cuenta')) {
+        return "🎮 **Tipos de Cuentas en Nexus Games:**\n\n" +
+               "⭐ **Cuenta Primaria:** Jugás desde tu usuario personal, acumulás los trofeos en tu perfil y podés jugar con o sin conexión a internet.\n\n" +
+               "🔹 **Cuenta Secundaria:** Jugás únicamente ingresando desde el perfil entregado por nosotros y la consola requiere conexión a internet.";
+    }
+
+    // 4. Conexión a Internet
+    if (q.includes('internet') || q.includes('conexion') || q.includes('offline') || q.includes('sin internet')) {
+        return "🌐 **Requisitos de conexión:**\n\n" +
+               "• **Cuenta Primaria:** Podés jugar sin conexión a internet una vez descargado el juego.\n" +
+               "• **Cuenta Secundaria:** Requiere que la consola esté conectada a internet siempre para verificar la licencia.";
+    }
+
+    // 5. Envíos y entregas
+    if (q.includes('envio') || q.includes('entrega') || q.includes('tarda') || q.includes('demora') || q.includes('cuanto') || q.includes('gmail') || q.includes('mail')) {
+        return "✉️ **Envío Digital Inmediato:**\n\n" +
+               "Todos nuestros juegos se envían directamente a tu **correo Gmail** con sus instrucciones de instalación.\n\n" +
+               "⚡ **Tiempo estimado:** Recibís tu cuenta entre 5 y 15 minutos luego de validar el comprobante de pago por WhatsApp.";
+    }
+
+    // 6. Garantía y seguridad
+    if (q.includes('garantia') || q.includes('candado') || q.includes('seguro') || q.includes('confiable') || q.includes('estafa') || q.includes('original')) {
+        return "🛡️ **Garantía y Seguridad:**\n\n" +
+               "Todos los productos son 100% originales y digitales.\n\n" +
+               "Ofrecemos **Garantía Anti-candado vitalicia** y soporte directo vía WhatsApp para asistirte en la instalación.";
+    }
+
+    // 7. Ofertas y Promociones
+    if (q.includes('descuento') || q.includes('combo') || q.includes('promocion') || q.includes('oferta')) {
+        return "🔥 **Promociones y Descuentos:**\n\n" +
+               "Contamos con ofertas semanales en nuestro catálogo. Podés revisar la sección **OFERTAS** en el menú principal para ver los precios rebajados.";
+    }
+
+    // 8. PS Plus
+    if (q.includes('plus') || q.includes('essential') || q.includes('extra') || q.includes('deluxe') || q.includes('online') || q.includes('membresia') || q.includes('suscripcion')) {
+        return "🎮 **Membresías PlayStation Plus:**\n\n" +
+               "Disponemos de planes de **1, 3 y 12 meses** para PS4 y PS5 en sus 3 niveles:\n" +
+               "• **Essential:** Multijugador online y juegos mensuales.\n" +
+               "• **Extra:** Catálogo de +400 juegos PS4/PS5.\n" +
+               "• **Deluxe:** Catálogo completo + Clásicos de PS1/PS2/PSP.\n\n" +
+               "Hacé clic en 'PS PLUS' en el menú principal para ver los precios.";
+    }
+
+    // 9. Instrucciones de compra
+    if (q.includes('comprar') || q.includes('paso') || q.includes('proceso') || q.includes('pedido') || q.includes('instrucciones')) {
+        return "🛒 **¿Cómo realizar una compra?:**\n\n" +
+               "1. Elegí tu juego o suscripción y tocala para ver las opciones.\n" +
+               "2. Agregala al carrito.\n" +
+               "3. Presioná **Continuar al Pago**.\n" +
+               "4. Hacé la transferencia con el alias brindado y tocá **Enviar Comprobante** para escribirnos por WhatsApp con tu número de pedido.";
+    }
+
+    // 10. Contacto humano
+    if (q.includes('whatsapp') || q.includes('humano') || q.includes('persona') || q.includes('contacto') || q.includes('soporte') || q.includes('hablar')) {
+        return "💬 Podés consultar con un asesor directamente:\n\n" +
+               `<a href="${waLink}" target="_blank" class="chat-wa-btn">💬 Chatear por WhatsApp</a>`;
+    }
+
+    // 11. Saludos
+    if (q.includes('hola') || q.includes('buenas') || q.includes('buenos dias') || q.includes('buenas noches') || q.includes('que tal') || q.includes('saludos')) {
+        return "¡Hola! 👋 ¿Cómo estás? Contame qué duda tenés sobre nuestros juegos digitales, membresías PS Plus o medios de pago.";
+    }
+
+// 10. Contacto humano
+    if (q.includes('whatsapp') || q.includes('humano') || q.includes('persona') || q.includes('contacto') || q.includes('soporte') || q.includes('hablar')) {
+        return "💬 Podés consultar con un asesor directamente:\n\n" +
+               `<a href="${waLink}" target="_blank" class="chat-wa-btn">💬 Chatear por WhatsApp</a>`;
+    }
+
+    // 11. Saludos
+    if (q.includes('hola') || q.includes('buenas') || q.includes('buenos dias') || q.includes('buenas noches') || q.includes('que tal') || q.includes('saludos')) {
+        return "¡Hola! 👋 ¿Cómo estás? Contame qué duda tenés sobre nuestros juegos digitales, membresías PS Plus o medios de pago.";
+    }
+
+    // 12. Horarios de Atención (DEBE IR ANTES DE LA RESPUESTA POR DEFECTO)
+    if (q.includes('horario') || q.includes('hora') || q.includes('abierto') || q.includes('atencion') || q.includes('atienden')) {
+        return "🕒 **Horarios de Atención:**\n\n" +
+               "• **Lunes a Sábados:** 09:00 a 21:00 hs\n" +
+               "• **Domingos y Feriados:** Guardia reducida.\n\n" +
+               "⚡ Podés realizar tu pedido en la web las 24 hs. Las entregas por Gmail se procesan dentro del horario de atención.";
+    }
+
+    13. // Medios de pago / Dólares
+    if (q.includes('dolar') || q.includes('dolares') || q.includes('usd') || q.includes('moneda')) {
+        return "💵 **Pagos en Dólares (USD):**\n\n" +
+           "• **Transferencia bancaria (Argentina):** Aceptamos transferencias en USD a nuestra cuenta de Brubank.\n" +
+           "• **Alias USD:** `stuberr.fede.usd`\n" +
+           "• **Titular:** Stuber Federico Agustin\n\n" +
+           "Al seleccionar el apartado **USD** al finalizar tu compra, vas a ver los datos bancarios completos y la cotización tomada de referencia.";
+}
+    // 14. RESPUESTA FINAL POR DEFECTO (ÚNICAMENTE AL FINAL DE TODO)
+    return "🤖 Como asistente de **Nexus Games**, únicamente respondo dudas sobre nuestros **juegos, cuentas, pagos y envíos**.\n\n" +
+           "🕒 **Atención al cliente:** Lunes a Sábados de 09:00 a 21:00 hs.\n\n" +
+           "Si tenés una consulta específica sobre tu compra, podés hablar con un asesor humano:\n\n" +
+           `<a href="${waLink}" target="_blank" class="chat-wa-btn">💬 Hablar con Asesor en WhatsApp</a>`;
+}
+// Actualizar el texto del banner ni bien cargue la página
+window.addEventListener('DOMContentLoaded', () => {
+    const rateSpan = document.getElementById('banner-exchange-rate');
+    if (rateSpan) {
+        rateSpan.innerText = EXCHANGE_RATE_USD.toLocaleString('es-AR');
+    }
+});
